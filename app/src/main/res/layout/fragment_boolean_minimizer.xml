@@ -1,0 +1,252 @@
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout"
+    tools:context="com.hunter04d.android.booleanminimizer.BooleanMinimizerFragment">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true">
+
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/input_layout_formula"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <EditText
+                android:id="@+id/input_formula"
+                style="@android:style/Widget.Material.EditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:fontFamily="consolas"
+                android:gravity="right"
+                android:hint="@string/enter_expression"
+                android:inputType="text"
+                android:textSize="24sp"
+                android:typeface="monospace"
+                android:windowSoftInputMode="stateAlwaysHidden"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/button_0"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:elevation="24dp"
+            android:text="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/input_layout_formula"/>
+
+        <Button
+            android:id="@+id/button_not"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="¬"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_0"/>
+
+        <Button
+            android:id="@+id/button_1"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginTop="8dp"
+            android:elevation="24dp"
+            android:text="1"
+            app:layout_constraintStart_toEndOf="@+id/button_0"
+            app:layout_constraintTop_toBottomOf="@+id/input_layout_formula"/>
+
+        <Button
+            android:id="@+id/button_and"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="8dp"
+            android:text="∧"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_not"/>
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="20dp"/>
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="20dp"/>
+
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_backspace_white_24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/input_layout_formula"/>
+
+        <ImageButton
+            android:id="@+id/imageButton2"
+            style="@android:style/Widget.DeviceDefault.Light.ImageButton"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_clear_white_24dp"
+            app:layout_constraintEnd_toStartOf="@+id/imageButton"
+            app:layout_constraintTop_toBottomOf="@+id/input_layout_formula"/>
+
+        <Button
+            android:id="@+id/button_dash"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="‒"
+            app:layout_constraintStart_toEndOf="@+id/button_1"
+            app:layout_constraintTop_toBottomOf="@+id/input_layout_formula"/>
+
+        <Button
+            android:id="@+id/button_or"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="8dp"
+            android:text="∨"
+            app:layout_constraintStart_toEndOf="@+id/button_and"
+            app:layout_constraintTop_toBottomOf="@+id/button_brace_left"/>
+
+        <Button
+            android:id="@+id/button_brace_right"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text=")"
+            app:layout_constraintStart_toEndOf="@+id/button_brace_left"
+            app:layout_constraintTop_toBottomOf="@+id/button_1"/>
+
+        <Button
+            android:id="@+id/button_brace_left"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="("
+            app:layout_constraintStart_toEndOf="@+id/button_not"
+            app:layout_constraintTop_toBottomOf="@+id/button_1"/>
+
+        <Button
+            android:id="@+id/button_xor"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="8dp"
+            android:text="⊕"
+            app:layout_constraintStart_toEndOf="@+id/button_or"
+            app:layout_constraintTop_toBottomOf="@+id/button_brace_right"/>
+
+        <Button
+            android:id="@+id/button_x1"
+            android:layout_width="64dp"
+            android:layout_height="56dp"
+            android:layout_marginTop="8dp"
+            android:text="x1"
+            app:layout_constraintEnd_toStartOf="@+id/button_x2"
+            app:layout_constraintTop_toBottomOf="@+id/button_dash"/>
+
+        <Button
+            android:id="@+id/button_x2"
+            android:layout_width="64dp"
+            android:layout_height="56dp"
+            android:layout_marginTop="8dp"
+            android:text="X2"
+            app:layout_constraintEnd_toStartOf="@+id/button_x3"
+            app:layout_constraintTop_toBottomOf="@+id/button_dash"/>
+
+        <Button
+            android:id="@+id/button_x3"
+            android:layout_width="64dp"
+            android:layout_height="56dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:text="X3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_dash"/>
+
+        <Button
+            android:id="@+id/button_x4"
+            android:layout_width="64dp"
+            android:layout_height="56dp"
+            android:text="X4"
+            app:layout_constraintEnd_toStartOf="@+id/button_x5"
+            app:layout_constraintTop_toBottomOf="@+id/button_x1"/>
+
+        <Button
+            android:id="@+id/button_x5"
+            android:layout_width="64dp"
+            android:layout_height="56dp"
+            android:text="X5"
+            app:layout_constraintEnd_toStartOf="@+id/button_x6"
+            app:layout_constraintTop_toBottomOf="@+id/button_x2"/>
+
+        <Button
+            android:id="@+id/button_x6"
+            android:layout_width="64dp"
+            android:layout_height="56dp"
+            android:layout_marginEnd="8dp"
+            android:text="X6"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_x3"/>
+
+        <Button
+            android:id="@+id/button_x7"
+            android:layout_width="64dp"
+            android:layout_height="56dp"
+            android:text="X7"
+            app:layout_constraintEnd_toStartOf="@+id/button_x6"
+            app:layout_constraintStart_toStartOf="@+id/button_x5"
+            app:layout_constraintTop_toBottomOf="@+id/button_x5"/>
+
+        <WebView
+            android:id="@+id/webView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_x7"/>
+
+        <Button
+            android:id="@+id/button_calc"
+            android:layout_width="64dp"
+            android:layout_height="56dp"
+            android:layout_marginEnd="8dp"
+            android:text="="
+            android:textColor="?attr/colorAccent"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/button_x7"
+            app:layout_constraintTop_toBottomOf="@+id/button_x6"/>
+
+    </android.support.constraint.ConstraintLayout>
+</layout>
