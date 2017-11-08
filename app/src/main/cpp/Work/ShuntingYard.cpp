@@ -1,10 +1,10 @@
 ﻿#include "ShuntingYard.h"
 #include <sstream>
 #include "Tokens.h"
-#include <cctype>
+#include <ctype.h>
 #include <string>
 #include <algorithm>
-#include "Stack.h"
+#include <stack>
 
 /**
  * @brief preAnalize - function that converts an expression from mathematical to one that can be procced by shunting yard
@@ -16,12 +16,12 @@ void ShuntingYard::preAnalize(std::string& _in)
     for(size_t i = 0u; i < _in.size();++i)
     {
         char& curr_char = _in[i];
-		if (curr_char == '(' && i != 0)// before a left brace if the last token was a operand
+		if (curr_char == '(' && i != 0)// before a left brace if the last token was a operand or a right brace
         {
             if (isdigit(_in[i - 1]))
             {
                 int reverse_i = 1;
-                while (isdigit(_in[i - reverse_i]) || _in[i - reverse_i] == '.')
+                while (isdigit(_in[i - reverse_i]))
                 {
                     if (i - reverse_i == 0)
                     {
@@ -47,6 +47,14 @@ void ShuntingYard::preAnalize(std::string& _in)
 				_in.insert(_in.begin() + (i+1), '*');
 			}
 		}
+        if((curr_char == '0' || curr_char == '1') && i != 0)
+        {
+            auto& prev_char = _in[i-1];
+            if(prev_char == '0' || prev_char == '1')
+            {
+                _in.insert(_in.begin() + i, '*');
+            }
+        }
 		if (isalpha(curr_char) && i != 0) // in between a function token and a operand
         {
             if (isdigit(_in[i - 1]))
@@ -66,16 +74,14 @@ void ShuntingYard::preAnalize(std::string& _in)
 std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_number) //to RPN
 {
     size_t pos(0);
-    Stack<std::string> stack;
+    std::stack<std::string> stack;
 	bool had_variable = false; // flag to check if a variable is present
-	bool last_was_func = false; // flag to check is last token was function
 	enum E_StateMachine // state machine to check the input correctness
 	{
 		expect_operator,
 		expect_operand
 	}state = expect_operand;
     std::string out;
-   // std::vector<bool> has_variable(_function_number, false);
     while (pos < _in.size())
     {
         char curr_char = _in[pos];
@@ -92,7 +98,6 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
 			out += _in.substr(pos, var_pair) + ' ';
 			// has_variable.at(std::stoi(_in.substr(pos+1,var_pair-1))-1) = true;
             pos += var_pair;
-            last_was_func = false;
 			had_variable = true;
 			state = expect_operator;
             continue;
@@ -109,7 +114,6 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
 			}
             out += (_in.substr(pos, num_len) + ' ');
             pos += num_len;
-            last_was_func = false;
 			state = expect_operator;
             continue;
         }
@@ -118,15 +122,10 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
         {
             stack.push("(");
             ++pos;
-            last_was_func = false;
             continue;
         }
         if (curr_char == ')')
         {
-            if (last_was_func)
-            {
-                throw std::exception("Empty function argument list");
-            }
 			if(state != expect_operator)
 			{
 				std::string exception_happened("before a closing right brace at pos ");
@@ -136,7 +135,8 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
             bool found_left_parenthesis = false;
             while (!(stack.empty() || (found_left_parenthesis = stack.top() == "(")))
             {
-                out += stack.pop() + ' ';
+                out += stack.top() + ' ';
+                stack.pop();
             }
             if (found_left_parenthesis == false) // if the stack is emptied and the left parenthesis was not found
             {
@@ -145,10 +145,10 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
 			stack.pop(); // the left brace at the top
             if (!stack.empty() && Tokens::Functions::isFunction(stack.top()))
             {
-                out += stack.pop() + ' ';
+                out += stack.top() + ' ';
+                stack.pop();
             }
             ++pos;
-            last_was_func = false;
 			state = expect_operator;
             continue;
         }
@@ -159,7 +159,6 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
             {
                 stack.push("unary_minus");
                 ++pos;
-                last_was_func = false;
                 continue;
             }
         }
@@ -178,28 +177,12 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
             }
             while (!stack.empty() && operatorCompare(curr_char, stack.top()))
             {
-                out += stack.pop() + ' ';
+                out += stack.top() + ' ';
+                stack.pop();
             }
             stack.push(std::string(1, curr_char));
             ++pos;
-            last_was_func = false;
 			state = expect_operand;
-            continue;
-        }
-        // Functions
-        int func_len = getFuncToken(_in, pos);
-        if (func_len != -1)
-        {
-			if(state != expect_operand)
-			{
-				std::string exception_happened("operator expected at position ");
-				exception_happened += std::to_string(pos+1) + ". Got a function";
-				throw(std::exception(exception_happened.c_str()));
-			}
-            stack.push(_in.substr(pos, func_len));
-            stack.push("(");
-            pos += func_len + 1;
-			last_was_func = true;
             continue;
         }
 		std::string exception_happened = "Unknown token at position " + std::to_string(pos + 1);
@@ -209,7 +192,8 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
     {
         if (stack.top() == "(")
             throw std::exception("Error: Mismatched parenthesis");
-        out += stack.pop() + ' ';
+        out += stack.top() + ' ';
+        stack.pop();
     }
 /*
     for(size_t i = 0; i < _function_number; ++i)
@@ -240,7 +224,7 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
 double ShuntingYard::calculateFunc(const std::string& _RPN, const std::vector<double>& _arg_vals)
 {
     std::istringstream stream(_RPN);
-    Stack<double> numbers;
+    std::stack<double> numbers;
     std::string token;
     double number_token;
 	while (stream >> token) // read a token
@@ -261,7 +245,10 @@ double ShuntingYard::calculateFunc(const std::string& _RPN, const std::vector<do
                 {
                     throw std::exception("incorrect intput");
                 }
-                double operant2(numbers.pop()), operant1(numbers.pop());
+                double operant2(numbers.top());
+                numbers.pop();
+                double operant1(numbers.top());
+                numbers.pop;
                 const Tokens::Operators::S_Operator& v_operator = Tokens::Operators::getOperator(token[0]);
                 numbers.push(v_operator.function(operant1, operant2));
             }
@@ -271,7 +258,8 @@ double ShuntingYard::calculateFunc(const std::string& _RPN, const std::vector<do
                 {
                     throw std::exception("incorrect intput");
                 }
-                double argument(numbers.pop());
+                double argument(numbers.top());
+                numbers.pop();
 				numbers.push((Tokens::Functions::getFunction(token))(argument));
             }
         }
@@ -301,11 +289,11 @@ int ShuntingYard::getVariableToken(const std::string& _in, size_t _pos,size_t _f
         }
         if (count == 1)
         {
-            throw std::exception("x must have a number after it");
+            throw std::invalid_argument("x must have a number after it");
         }
         if (std::stoi(_in.substr(_pos + 1, count - 1)) > _function_number /*NUM_OF_FUNCTIONS*/)
         {
-            throw std::exception("A variable has higher index than total number of functions");
+            throw  std::invalid_argument("A variable has higher index than total number of functions");
         }
         return count;
     }
@@ -336,7 +324,7 @@ int ShuntingYard::getNumberToken(const std::string& _in, size_t _pos /*= 0*/)
 					++after_dot_count;
 				}
             }
-            else if (_in[i] == '.' && dottag == false)
+            else if (_in[i] == '.')
             {
                 if (dottag == false)
                 {
@@ -419,10 +407,6 @@ bool ShuntingYard::operatorCompare(char _in_char, const std::string& _tops_of_st
     {
         top_of_stack_presedence = Tokens::Operators::getOperator(_tops_of_stack.at(0)).presedence;
     }
-	if ((curr_operator.associativity == Tokens::Operators::S_Operator::E_left && curr_operator.presedence <= top_of_stack_presedence) ||
-		(curr_operator.associativity == Tokens::Operators::S_Operator::E_right && curr_operator.presedence < top_of_stack_presedence))
-    {
-        return true;
-    }
-    return false;
+    return (curr_operator.associativity == Tokens::Operators::S_Operator::E_left && curr_operator.presedence <= top_of_stack_presedence) ||
+           (curr_operator.associativity == Tokens::Operators::S_Operator::E_right && curr_operator.presedence < top_of_stack_presedence);
 }

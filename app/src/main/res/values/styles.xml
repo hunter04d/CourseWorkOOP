@@ -6,8 +6,11 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorButtonNormal">@color/LighthBlue500</item>
+        <item name="colorButtonNormal">@android:color/white</item>
         <item name="colorControlHighlight">@color/LighthBlue700</item>
     </style>
-
+    <style name="MaterialButtonAccent" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorControlHighlight">@color/LighthBlue500</item>
+        <item name="colorButtonNormal">@color/LighthBlue700</item>
+    </style>
 </resources>

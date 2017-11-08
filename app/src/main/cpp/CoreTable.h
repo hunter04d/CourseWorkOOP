@@ -39,17 +39,17 @@ public:
 	CoreTable(std::vector<TermIndex> _min_terms, FunctionBool _func) : rows(_min_terms.size()), coloumlns(_func.PDNF_Size()), num_of_vars(_func.numberOfvars), F_table(rows, std::vector<Cell>(coloumlns))
 	{
 		auto _PDNF = _func.PDNF();
-		for (auto i = 0; i < coloumlns; ++i)
+		for (auto i = 0u; i < coloumlns; ++i)
 		{
 			terms.emplace_back(VarTable(_func.numberOfvars, _PDNF.at(i)));
 		}
-		for (auto i = 0; i < rows; ++i)
+		for (auto i = 0u; i < rows; ++i)
 		{
 			min_terms.emplace_back(_min_terms.at(i));
 		}
-		for (auto i = 0; i < rows; ++i)
+		for (auto i = 0u; i < rows; ++i)
 		{
-			for (auto j = 0; j < coloumlns; ++j)
+			for (auto j = 0u; j < coloumlns; ++j)
 			{
 				if (terms.at(j).term.Includes(min_terms.at(i).term))
 				{
