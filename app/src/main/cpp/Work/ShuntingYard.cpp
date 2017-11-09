@@ -1,6 +1,7 @@
 ﻿#include "ShuntingYard.h"
 #include <sstream>
 #include "Tokens.h"
+#include "ParserException.h"
 #include <ctype.h>
 #include <string>
 #include <algorithm>
@@ -91,9 +92,7 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
         {
 			if(state!= expect_operand)
 			{
-				std::string exception_happened("operator expected at position ");
-				exception_happened += std::to_string(pos+1) + ". Got a variable token";
-				throw(std::exception(exception_happened.c_str()));
+                throw ParserException(ParserException::ErrorCode::EXPECTED_OPERATOR, pos+1);
 			}
 			out += _in.substr(pos, var_pair) + ' ';
 			// has_variable.at(std::stoi(_in.substr(pos+1,var_pair-1))-1) = true;
@@ -102,18 +101,15 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
 			state = expect_operator;
             continue;
         }
-        // Number
-        int num_len = getNumberToken(_in, pos);
-        if (num_len != -1)
+        // Constant
+        if (curr_char == '0' || curr_char == '1')
         {
 			if(state!= expect_operand)
 			{
-				std::string exception_happened("operator expected at position ");
-				exception_happened += std::to_string(pos+1) + ". Got a number";
-				throw(std::exception(exception_happened.c_str()));
+				throw ParserException(ParserException::ErrorCode::EXPECTED_OPERATOR, pos+1);
 			}
-            out += (_in.substr(pos, num_len) + ' ');
-            pos += num_len;
+            out += (_in.substr(pos, 1) + ' ');
+            ++pos;
 			state = expect_operator;
             continue;
         }
@@ -128,9 +124,7 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
         {
 			if(state != expect_operator)
 			{
-				std::string exception_happened("before a closing right brace at pos ");
-				exception_happened += std::to_string(pos+1) + " there has to be an operand of a kind";
-				throw(std::exception(exception_happened.c_str()));
+				throw ParserException(ParserException::ErrorCode::OPERATOR_BEFORE_RIGHT_BRACE, pos +1);
 			}
             bool found_left_parenthesis = false;
             while (!(stack.empty() || (found_left_parenthesis = stack.top() == "(")))
@@ -140,14 +134,9 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
             }
             if (found_left_parenthesis == false) // if the stack is emptied and the left parenthesis was not found
             {
-                throw std::exception("Mismatched Parenthesis");
+                throw ParserException(ParserException::ErrorCode::MISPATCHED_PARENTHESIS);
             }
 			stack.pop(); // the left brace at the top
-            if (!stack.empty() && Tokens::Functions::isFunction(stack.top()))
-            {
-                out += stack.top() + ' ';
-                stack.pop();
-            }
             ++pos;
 			state = expect_operator;
             continue;
@@ -167,13 +156,11 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
         {
             if(pos == 0)
             {
-                throw(std::exception("operator at the beginning of a function"));
+                throw ParserException(ParserException::ErrorCode::OPERATOR_IN_FRONT, 0);
             }
 			if(state != expect_operator)
             {
-				std::string exception_happened( "Unexpected operator at position ");
-				exception_happened += std::to_string(pos+1);
-                throw(std::exception(exception_happened.c_str()));
+                throw ParserException(ParserException::ErrorCode::EXPECTED_OPERATOR, pos+1);
             }
             while (!stack.empty() && operatorCompare(curr_char, stack.top()))
             {
@@ -185,33 +172,22 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
 			state = expect_operand;
             continue;
         }
-		std::string exception_happened = "Unknown token at position " + std::to_string(pos + 1);
-		throw std::exception(exception_happened.c_str());
+		throw ParserException(ParserException::ErrorCode::UNKNOWN, pos+1);
     }
 	while (!stack.empty())
     {
         if (stack.top() == "(")
-            throw std::exception("Error: Mismatched parenthesis");
+            throw ParserException(ParserException::ErrorCode::MISPATCHED_PARENTHESIS);
         out += stack.top() + ' ';
         stack.pop();
     }
-/*
-    for(size_t i = 0; i < _function_number; ++i)
-    {
-        if(has_variable.at(i) == false)
-        {
-            throw std::exception("Not all variables are present");
-        }
-    }
-*/
 	if(state == expect_operand)
     {
-        throw(std::exception("operator without a second operant at the end of the function"));
+        throw ParserException(ParserException::ErrorCode::OPERATOR_AT_THE_END);
     }
 	if(!had_variable)
 	{
-		throw(std::exception("function must have at least one variable in it"));
-	}
+		throw ParserException(ParserException::ErrorCode::EVALUATES_TO_CONSTANT)
     return out;
 }
 
@@ -243,7 +219,7 @@ double ShuntingYard::calculateFunc(const std::string& _RPN, const std::vector<do
             {
                 if(numbers.size()< 2)
                 {
-                    throw std::exception("incorrect intput");
+                    throw ParserException(ParserException::ErrorCode::UNKNOWN);
                 }
                 double operant2(numbers.top());
                 numbers.pop();
@@ -251,16 +227,6 @@ double ShuntingYard::calculateFunc(const std::string& _RPN, const std::vector<do
                 numbers.pop;
                 const Tokens::Operators::S_Operator& v_operator = Tokens::Operators::getOperator(token[0]);
                 numbers.push(v_operator.function(operant1, operant2));
-            }
-            else // isFunction(token)
-            {
-                if(numbers.empty())
-                {
-                    throw std::exception("incorrect intput");
-                }
-                double argument(numbers.top());
-                numbers.pop();
-				numbers.push((Tokens::Functions::getFunction(token))(argument));
             }
         }
     }
@@ -289,98 +255,13 @@ int ShuntingYard::getVariableToken(const std::string& _in, size_t _pos,size_t _f
         }
         if (count == 1)
         {
-            throw std::invalid_argument("x must have a number after it");
+            throw ParserException(ParserException::ErrorCode::INVALID_VARIABLE);
         }
         if (std::stoi(_in.substr(_pos + 1, count - 1)) > _function_number /*NUM_OF_FUNCTIONS*/)
         {
-            throw  std::invalid_argument("A variable has higher index than total number of functions");
+            throw  ParserException(ParserException::ErrorCode::INVALID_VARIABLE);
         }
         return count;
-    }
-    return -1;
-}
-
-/**
- * @brief getNumberToken - function that checks if there is a spaning number token at this position and if there is output it's length
- * @param _in - input string
- * @param _pos - position to check at
- * @return -1 if it is not a number token, else the length of a token
- */
-int ShuntingYard::getNumberToken(const std::string& _in, size_t _pos /*= 0*/)
-{
-	// number is defined as any number of digits, one dot is possible
-    if (isdigit(_in[_pos]))
-    {
-        size_t count = 1;
-		size_t after_dot_count = 0;
-        bool dottag = false;
-        for (size_t i = _pos + 1; i < _in.size(); ++i)
-        {
-            if (isdigit(_in[i]))
-            {
-                ++count;
-				if(dottag)
-				{
-					++after_dot_count;
-				}
-            }
-            else if (_in[i] == '.')
-            {
-                if (dottag == false)
-                {
-                    dottag = true; ++count;
-                }
-                //more then one dot in a num
-                else
-                {
-                    std::string exception_happened = "Unrecognized dot at position " + std::to_string(_pos + count + 1);
-                    throw std::exception(exception_happened.c_str());
-                }
-            }
-            else { break; }
-        }
-		if(after_dot_count > 10)
-		{
-			throw std::exception("Numbers with the pressision of more than 10 digits after the dot are not allowed in functions");
-		}
-        return int(count);
-    }
-    return -1;
-}
-
-/**
- * @brief getFuncToken - function that checks if there is a spaning function token at this position and if there is output it's length
- * @param _in - input string
- * @param _pos - positon to check at
- * @return -1 if it is a function token, else the length of a token
- */
-int ShuntingYard::getFuncToken(const std::string& _in, size_t _pos /*= 0*/)
-{
-    //function is defined as letters and numbers until '(' starting with !!!a letter!!!
-    //example: log10, ln, sin, cos, ect...
-    if (isalpha(_in[_pos]))
-    {
-        size_t count = 1;
-        for (size_t i = _pos + 1; i < _in.size(); ++i)
-        {
-            if (isalnum(_in[i]))
-            {
-                ++count;
-            }
-            if (_in[i] == '(')
-            {
-                break;
-            }
-            if (i ==_in.size()-1)
-            {
-				std::string exception_happened = "Unknown token at position " + std::to_string(_pos + 1) + ": " + _in.substr(_pos, count);
-				throw std::exception(exception_happened.c_str());
-            }
-        }
-        if (Tokens::Functions::isFunction(_in.substr(_pos, count)))
-            return int(count);
-		std::string exception_happened = "Unknown token at position " + std::to_string(_pos + 1) + ": " + _in.substr(_pos, count);
-        throw std::exception(exception_happened.c_str());
     }
     return -1;
 }

@@ -39,29 +39,4 @@ namespace Tokens
 		bool isOperator(char _in); // prototype of a function to check is the _in char is a defined operator
 		const S_Operator& getOperator(char _in); // prototype of a function to get the operator struct based on the input char
 	}
-
-	namespace Functions
-	{
-		using T_MathsFunction = double(*)(double);
-		/*storage for defined functions*/
-		const std::unordered_map<std::string ,T_MathsFunction> functions_container // define new functions here
-		{
-			{"unary_minus",[](auto argument) { return -argument; }},
-			{"sqrt", [](auto argument) { return sqrt(argument); }},
-			{"cbrt", [](auto argument) { return cbrt(argument); } },
-			{"exp", [](auto argument) { return exp(argument); }},
-			{"sin", [](auto argument) { return sin(argument); }},
-			{"cos", [](auto argument) { return cos(argument); }},
-			{"ln", [](auto argument) { return log(argument); }},
-			{"log2", [](auto argument) { return log2(argument);}},
-			{"log10",[](auto argument) { return log10(argument); }},
-			{"abs", [](auto argument) { return abs(argument); }},
-			{"tg", [](auto argument) { return tan(argument); }},
-			{"ctg", [](auto argument) { return 1/tan(argument); }}
-
-		};
-
-		bool isFunction(const std::string& _in); // prototype of a function to check is the _in string is a defined function token
-		const T_MathsFunction& getFunction(const std::string& _in); // prototype of a function to get the function struct based on the input string
-	}
 }
