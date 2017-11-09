@@ -33,11 +33,12 @@ public:
     {
         auto var_vals = VarTable(_var_num);
         std::string out;
-        do
+        while (var_vals.decimal() < (pow(2, _var_num) -1))
         {
             out += (calculateFunc(var_vals) + '0');
             var_vals.Increment();
-        }while (var_vals.decimal() != (pow(2, _var_num) -1));
+        }
+        out += (calculateFunc(var_vals) + '0');
         return out;
     }
 

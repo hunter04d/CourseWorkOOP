@@ -18,7 +18,7 @@ public:
 	{
 		for (size_t i = 0; i < F_size; ++i)
 		{
-			F_term.at(i) = static_cast<val>(_init_val.at(i));
+			F_term.at(i) = static_cast<val>((int)_init_val.at(i));
 		}
 
 	}

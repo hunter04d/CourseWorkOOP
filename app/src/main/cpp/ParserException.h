@@ -27,7 +27,7 @@ public:
 
     };
 
-    ParserException(ErrorCode code, int pos = -1) : str(std::to_string(int(code)) + ' ' + pos) { }
+    ParserException(ErrorCode code, int pos = -1) : str(std::to_string(int(code)) + ' ' + std::to_string(pos)) { }
 
     const char* what() const _NOEXCEPT
     {

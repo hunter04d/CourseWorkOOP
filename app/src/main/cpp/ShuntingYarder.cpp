@@ -44,7 +44,7 @@ void ShuntingYarder::preAnalize()
 		}
 		if(curr_char == ')' && i <(input_expr.size()-1)) // after a closing right brace before an operand
 		{
-			if(!Tokens::isOperator(input_expr[i+1]))
+			if(!Tokens::isCharOperator(input_expr[i + 1]))
 			{
 				input_expr.insert(input_expr.begin() + (i+1), '*');
 			}
@@ -145,7 +145,7 @@ ShuntingYarder ShuntingYarder::parse(size_t _var_number) //to RPN
         // Unary Minus
         if(curr_char == '-' && pos < input_expr.size()-1)
         {
-            if((pos == 0 || input_expr[pos-1] == '(' || Tokens::isOperator(input_expr[pos-1])))
+            if((pos == 0 || input_expr[pos-1] == '(' || Tokens::isCharOperator(input_expr[pos - 1])))
             {
                 stack.push("unary_minus");
                 ++pos;
@@ -153,7 +153,7 @@ ShuntingYarder ShuntingYarder::parse(size_t _var_number) //to RPN
             }
         }
         // Operators
-        if (Tokens::isOperator(curr_char))
+        if (Tokens::isCharOperator(curr_char))
         {
             if(pos == 0)
             {
@@ -218,7 +218,7 @@ bool ShuntingYarder::calculateFunc(const VarTable& _arg_vals)
         }
         else
         {
-            if (Tokens::isOperator(token[0]))
+            if (Tokens::isCharOperator(token[0]))
             {
                 if(numbers.size()< 2)
                 {
@@ -228,7 +228,7 @@ bool ShuntingYarder::calculateFunc(const VarTable& _arg_vals)
                 numbers.pop();
                 auto operant1(numbers.top());
                 numbers.pop();
-                const Tokens::S_Operator& v_operator = Tokens::getOperator(token[0]);
+                const Tokens::S_Operator& v_operator = Tokens::getOperatorFromChar(token[0]);
                 numbers.push(v_operator.function(operant1, operant2));
             } else if(token == "unary_minus")
             {
@@ -286,7 +286,7 @@ int ShuntingYarder::getVariableToken(const std::string& _in, size_t _pos,size_t 
  */
 bool ShuntingYarder::operatorCompare(char _in_char, const std::string& _tops_of_stack)
 {
-    const Tokens::S_Operator& curr_operator = Tokens::getOperator(_in_char);
+    const Tokens::S_Operator& curr_operator = Tokens::getOperatorFromChar(_in_char);
 	size_t top_of_stack_presedence;
 	if (_tops_of_stack == "(") // brace is not an operator
     {
@@ -298,7 +298,7 @@ bool ShuntingYarder::operatorCompare(char _in_char, const std::string& _tops_of_
     }
     else
     {
-        top_of_stack_presedence = Tokens::getOperator(_tops_of_stack.at(0)).precedence;
+        top_of_stack_presedence = Tokens::getOperatorFromChar(_tops_of_stack.at(0)).precedence;
     }
     return (curr_operator.associativity == Tokens::S_Operator::E_left && curr_operator.precedence <= top_of_stack_presedence) ||
            (curr_operator.associativity == Tokens::S_Operator::E_right && curr_operator.precedence < top_of_stack_presedence);

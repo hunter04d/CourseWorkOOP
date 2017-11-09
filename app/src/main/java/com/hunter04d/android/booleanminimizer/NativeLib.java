@@ -14,5 +14,5 @@ public class NativeLib
     public static native String stringFromJNI(String str);
 
 
-    public static native String parseExpresion(String expr, int varNum);
+    public static native ParserResult parseExpresion(String expr, double varNum);
 }

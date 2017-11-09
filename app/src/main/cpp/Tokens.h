@@ -14,7 +14,6 @@
  */
 namespace Tokens
 {
-
 	struct S_Operator // Operator structure
 	{
 		enum associativity_tag // left or right associativity
@@ -24,9 +23,10 @@ namespace Tokens
 		};
 		size_t precedence; // operator precedence compared to others
 		associativity_tag associativity; // left or right
-		bool (*function)(bool , bool); // a function that implements operator's behavior (pointer to it)
+		std::function<bool (bool, bool)> function; // a function that implements operator's behavior (pointer to it)
 
 	};
+
 	class BooleanOperator
 	{
 		std::array<bool, 4> outcomes;
@@ -70,32 +70,25 @@ namespace Tokens
 
 	/*storage for defined operators*/
 	const std::unordered_map<char, S_Operator> operators_container // adding new operators can be done here and just here
-	{
-		{ '+', { 1, S_Operator::E_left, [](bool operant1, bool operant2) {return BooleanOperator{"0111"}(operant1, operant2); }} },
-		{ '-', { 1, S_Operator::E_left, [](bool operant1, bool operant2) {return operant1 - operant2; }} },
-		{ '*', { 2, S_Operator::E_left, [](bool operant1, bool operant2) {return BooleanOperator{"0001"}(operant1, operant2); }} },
-		{ '/', { 2, S_Operator::E_left, [](bool operant1, bool operant2) {return operant1 / operant2; }} },
-		{ '^', { 3, S_Operator::E_right,[](bool operant1, bool operant2) {return BooleanOperator{"0110"}(operant1, operant2); }} }
-	};
+        {
+                { '+', S_Operator{ 1, S_Operator::E_left, [](bool operant1, bool operant2) {return BooleanOperator{"0111"}(operant1, operant2); }} },
+                { '*', S_Operator{ 2, S_Operator::E_left, [](bool operant1, bool operant2) {return BooleanOperator{"0001"}(operant1, operant2); }} },
+                { '/', S_Operator{ 2, S_Operator::E_left, [](bool operant1, bool operant2) {return operant1 / operant2; }} },
+                { '^', S_Operator{ 3, S_Operator::E_right,[](bool operant1, bool operant2) {return BooleanOperator{"0110"}(operant1, operant2); }} }
+        };
 	/**
-	* @brief isOperator - function to check is the _in char is a defined operator
-	* @param _in - input char
-	* @return  true if it is indeed an operator, else false
-	*/
-	bool isOperator(char _in)
-	{
-		return operators_container.count(_in) == 1;
-	}
+* @brief isCharOperator - function to check is the _in char is a defined operator
+* @param _in - input char
+* @return  true if it is indeed an operator, else false
+*/
+	bool isCharOperator(const char &_in);
+
 
 	/**
-	* @brief getOperator - function to get the operator struct based on the input char
+	* @brief getOperatorFromChar - function to get the operator struct based on the input char
 	* @param _in - input char
 	* @return a reference to a corresponding operator in the operator container
 	*/
-	const Tokens::S_Operator& getOperator(char _in)
-	{
-		return operators_container.at(_in);
-	}
-
+	const Tokens::S_Operator& getOperatorFromChar(const char& _in);
 
 }

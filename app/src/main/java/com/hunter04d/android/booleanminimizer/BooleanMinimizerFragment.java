@@ -1,6 +1,7 @@
 package com.hunter04d.android.booleanminimizer;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.net.Uri;
@@ -39,12 +40,20 @@ public class BooleanMinimizerFragment extends Fragment
     }
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig)
+    {
+        super.onConfigurationChanged(newConfig);
+        mBinding.inputFormula.clearFocus();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_boolean_minimizer, container, false);
         mBinding.executePendingBindings();
-        mBinding.inputFormula.setShowSoftInputOnFocus(false);
         mBinding.inputFormula.clearFocus();
+        mBinding.inputFormula.setShowSoftInputOnFocus(false);
+        //mBinding.inputFormula.clearFocus();
         mBinding.button0.setOnClickListener(v -> addString("0"));
         mBinding.button1.setOnClickListener(v -> addString("1"));
         mBinding.buttonDash.setOnClickListener((view) -> addString("‒"));
@@ -113,21 +122,50 @@ public class BooleanMinimizerFragment extends Fragment
                 }
                 for(char x: s.toString().toCharArray())
                 {
-                    if (x == '0' || x == '1' || x == '‒')
-                    {
-                        continue;
-                    }
-                    else // TODO: Call native parser from here
+                    if (x != '0' && x != '1' && x != '‒')
                     {
                         mIsExprMode = true;
                         mBinding.inputLayoutFormula.setError(null);
                         mBinding.inputLayoutFormula.setHint(getString(R.string.enter_expression));
+                        String expr = s.toString();
+                        expr  = expr
+                                .replace("X1", "x1")
+                                .replace("X2", "x2")
+                                .replace("X3","x3")
+                                .replace("X4", "x4")
+                                .replace("X5", "x5")
+                                .replace("X6", "x6")
+                                .replace("X7", "x7")
+                                .replace("¬", "-")
+                                .replace("∧","*")
+                                .replace("∨", "+")
+                                .replace("⊕", "^");
+                        int varCount = 0;
+                        for (int i = 1; i <= 7;i++ )
+                        {
+                            if (expr.contains("x" + Integer.toString(i)))
+                            {
+                                varCount = i;
+                            }
+                        }
+                        ParserResult result = NativeLib.parseExpresion(expr, varCount);
+                        if (result.HasSucceded())
+                        {
+                            mVector = result.getResult();
+                            mBinding.inputLayoutFormula.setError(mVector);
+                        }
+                        else // TODO: Output error here
+                        {
+                            mVector = result.getResult();
+                            mBinding.inputLayoutFormula.setError(mVector);
+                        }
+
                         return;
                     }
                 }
                 mBinding.inputLayoutFormula.setHint("position: " + (mBinding.inputFormula.length() -1));
                 mIsExprMode = false;
-                if (s.length() != Math.pow(2, Math.ceil((double)(Math.log(s.length())/ Math.log(2)))))
+                if (s.length() != Math.pow(2, Math.ceil(Math.log(s.length())/ Math.log(2))))
                 {
                     mBinding.inputLayoutFormula.setError("Boolean vector has to have power of 2 points");
                 }
