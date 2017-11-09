@@ -1,9 +1,11 @@
 #include <jni.h>
 #include <string>
+#include "ShuntingYarder.h"
 #include "MinimizedManager.h"
 #include "CoreTable.h"
 #include "IndexTable.h"
 #include "FunctionBool.h"
+
 
 extern "C"
 JNIEXPORT jstring JNICALL
@@ -29,4 +31,18 @@ Java_com_hunter04d_android_booleanminimizer_NativeLib_stringFromJNI(JNIEnv *env,
     {
         return env->NewStringUTF("error");
     }
+}
+
+
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_hunter04d_android_booleanminimizer_NativeLib_parseExpresion(JNIEnv *env, jclass type,
+                                                                     jstring expr_, jint varNum) {
+    const char *expr = env->GetStringUTFChars(expr_, 0);
+
+    int var_num = reinterpret_cast<int>(varNum);
+    std::string out = (ShuntingYarder::create(expr)).parse().getVector(var_num);
+    env->ReleaseStringUTFChars(expr_, expr);
+
+    return env->NewStringUTF(out.c_str());
 }

@@ -1,6 +1,6 @@
 
 #include "PrintTable .h"
-
+#include <cmath>
 
 
 void PrintTable(std::vector<bool> &_function)

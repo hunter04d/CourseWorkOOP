@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "VarTable.h"
+#include <string>
 #include <vector>
 #include <iostream>
 #include <fstream>

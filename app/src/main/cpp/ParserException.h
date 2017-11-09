@@ -5,21 +5,14 @@
 #ifndef COURSEWORKOOP_PARSEREXCEPTION_H
 #define COURSEWORKOOP_PARSEREXCEPTION_H
 
-
-#include <stdexcept>
 #include <string>
+#include <stdexcept>
+
 
 class ParserException : std::exception
 {
     std::string str;
 public:
-    ParserException(ErrorCode code, int pos = -1) : str(std::to_string(int(code)) + ' ' + pos) { }
-
-    const char* what() const override
-    {
-        return str.c_str();
-    }
-
     enum class ErrorCode
     {
         UNKNOWN = 0,
@@ -33,6 +26,15 @@ public:
         OPERATOR_AT_THE_END = 8,
 
     };
+
+    ParserException(ErrorCode code, int pos = -1) : str(std::to_string(int(code)) + ' ' + pos) { }
+
+    const char* what() const _NOEXCEPT
+    {
+        return str.c_str();
+    }
+
+
 };
 
 

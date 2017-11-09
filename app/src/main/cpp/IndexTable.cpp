@@ -1,8 +1,10 @@
 ﻿#include "IndexTable.h"
 #include "FunctionBool.h"
+#include <string>
 #include <sstream>
 
 #include <set>
+#include <cmath>
 
 IndexTable::IndexTable(size_t NumOfVars) :size(2 << NumOfVars - 1), F_Table(size, std::vector<S_Index>(size))
 {

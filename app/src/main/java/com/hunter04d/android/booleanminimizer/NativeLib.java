@@ -12,4 +12,7 @@ public class NativeLib
         System.loadLibrary("native-lib");
     }
     public static native String stringFromJNI(String str);
+
+
+    public static native String parseExpresion(String expr, int varNum);
 }

@@ -1,78 +1,79 @@
-﻿#include "ShuntingYard.h"
+﻿#include "ShuntingYarder.h"
 #include <sstream>
 #include "Tokens.h"
 #include "ParserException.h"
 #include <ctype.h>
-#include <string>
+
 #include <algorithm>
 #include <stack>
+#include <VarTable.h>
 
 /**
  * @brief preAnalize - function that converts an expression from mathematical to one that can be procced by shunting yard
  * it mosty just inserts * where it can implied
- * @param _in - string to preanalize, changes are made to this string
+ * @param input_expr - string to preanalize, changes are made to this string
  */
-void ShuntingYard::preAnalize(std::string& _in)
+void ShuntingYarder::preAnalize()
 {
-    for(size_t i = 0u; i < _in.size();++i)
+    for(size_t i = 0u; i < input_expr.size();++i)
     {
-        char& curr_char = _in[i];
+        char& curr_char = input_expr[i];
 		if (curr_char == '(' && i != 0)// before a left brace if the last token was a operand or a right brace
         {
-            if (isdigit(_in[i - 1]))
+            if (isdigit(input_expr[i - 1]))
             {
                 int reverse_i = 1;
-                while (isdigit(_in[i - reverse_i]))
+                while (isdigit(input_expr[i - reverse_i]))
                 {
                     if (i - reverse_i == 0)
                     {
-                        _in.insert(_in.begin() + i, '*');
+                        input_expr.insert(input_expr.begin() + i, '*');
                         break;
                     }
                     ++reverse_i;
                 }
-                if (_in[i-reverse_i] == 'x'|| !isalpha(_in[i - reverse_i]))
+                if (input_expr[i-reverse_i] == 'x'|| !isalpha(input_expr[i - reverse_i]))
                 {
-                    _in.insert(_in.begin() + i, '*');
+                    input_expr.insert(input_expr.begin() + i, '*');
                 }
             }
-			if(_in[i-1] == ')')//in between left and right brace
+			if(input_expr[i-1] == ')')//in between left and right brace
 			{
-				 _in.insert(_in.begin() + i, '*');
+				 input_expr.insert(input_expr.begin() + i, '*');
 			}
 		}
-		if(curr_char == ')' && i <(_in.size()-1)) // after a closing right brace before an operand
+		if(curr_char == ')' && i <(input_expr.size()-1)) // after a closing right brace before an operand
 		{
-			if(!Tokens::Operators::isOperator(_in[i+1]))
+			if(!Tokens::isOperator(input_expr[i+1]))
 			{
-				_in.insert(_in.begin() + (i+1), '*');
+				input_expr.insert(input_expr.begin() + (i+1), '*');
 			}
 		}
         if((curr_char == '0' || curr_char == '1') && i != 0)
         {
-            auto& prev_char = _in[i-1];
+            auto& prev_char = input_expr[i-1];
             if(prev_char == '0' || prev_char == '1')
             {
-                _in.insert(_in.begin() + i, '*');
+                input_expr.insert(input_expr.begin() + i, '*');
             }
         }
 		if (isalpha(curr_char) && i != 0) // in between a function token and a operand
         {
-            if (isdigit(_in[i - 1]))
+            if (isdigit(input_expr[i - 1]))
             {
-                _in.insert(_in.begin() + i, '*');
+                input_expr.insert(input_expr.begin() + i, '*');
             }
         }
     }
 }
 
 /**
- * @brief shuntingYard - function to convert a function from infix to postfix notation
- * @param _in - input function in infix notation
- * @param _function_number - total number of functions to expect (max number of variables allowed)
+ * @brief parse - function to convert a function from infix to postfix notation
+ * @param input_expr - input function in infix notation
+ * @param _var_number - total number of functions to expect (max number of variables allowed)
  * @return function in posfix notation ready to be calculed
  */
-std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_number) //to RPN
+ShuntingYarder ShuntingYarder::parse(size_t _var_number) //to RPN
 {
     size_t pos(0);
     std::stack<std::string> stack;
@@ -83,19 +84,19 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
 		expect_operand
 	}state = expect_operand;
     std::string out;
-    while (pos < _in.size())
+    while (pos < input_expr.size())
     {
-        char curr_char = _in[pos];
+        char curr_char = input_expr[pos];
         //Variable
-        auto var_pair = getVariableToken(_in, pos, _function_number);
+        auto var_pair = getVariableToken(input_expr, pos, _var_number);
         if (var_pair != -1)
         {
 			if(state!= expect_operand)
 			{
                 throw ParserException(ParserException::ErrorCode::EXPECTED_OPERATOR, pos+1);
 			}
-			out += _in.substr(pos, var_pair) + ' ';
-			// has_variable.at(std::stoi(_in.substr(pos+1,var_pair-1))-1) = true;
+			out += input_expr.substr(pos, var_pair) + ' ';
+			// has_variable.at(std::stoi(input_expr.substr(pos+1,var_pair-1))-1) = true;
             pos += var_pair;
 			had_variable = true;
 			state = expect_operator;
@@ -108,7 +109,7 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
 			{
 				throw ParserException(ParserException::ErrorCode::EXPECTED_OPERATOR, pos+1);
 			}
-            out += (_in.substr(pos, 1) + ' ');
+            out += (input_expr.substr(pos, 1) + ' ');
             ++pos;
 			state = expect_operator;
             continue;
@@ -142,9 +143,9 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
             continue;
         }
         // Unary Minus
-        if(curr_char == '-' && pos < _in.size()-1)
+        if(curr_char == '-' && pos < input_expr.size()-1)
         {
-            if((pos == 0 || _in[pos-1] == '(' || Tokens::Operators::isOperator(_in[pos-1])))
+            if((pos == 0 || input_expr[pos-1] == '(' || Tokens::isOperator(input_expr[pos-1])))
             {
                 stack.push("unary_minus");
                 ++pos;
@@ -152,7 +153,7 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
             }
         }
         // Operators
-        if (Tokens::Operators::isOperator(curr_char))
+        if (Tokens::isOperator(curr_char))
         {
             if(pos == 0)
             {
@@ -186,47 +187,58 @@ std::string ShuntingYard::shuntingYard(const std::string& _in, size_t _function_
         throw ParserException(ParserException::ErrorCode::OPERATOR_AT_THE_END);
     }
 	if(!had_variable)
-	{
-		throw ParserException(ParserException::ErrorCode::EVALUATES_TO_CONSTANT)
-    return out;
+    {
+        throw ParserException(ParserException::ErrorCode::EVALUATES_TO_CONSTANT);
+    }
+    output_expr = std::move(out);
+    return *this;
 }
 
 /**
  * @brief calculateFunc - function that takes a function in RPN and a point and get's function value at that point
- * @param _RPN - function in postfix notation
+ * @param output_expr - function in postfix notation
  * @param _arg_vals - point at which to calculate
  * @return a value of a function at that point
  */
-double ShuntingYard::calculateFunc(const std::string& _RPN, const std::vector<double>& _arg_vals)
+bool ShuntingYarder::calculateFunc(const VarTable& _arg_vals)
 {
-    std::istringstream stream(_RPN);
-    std::stack<double> numbers;
+    std::istringstream stream(output_expr);
+    std::stack<bool > numbers;
     std::string token;
-    double number_token;
+    int number_token;
 	while (stream >> token) // read a token
     {
 		if (token[0] == 'x') // if it is a variable push it's value on to the stack
         {
-            numbers.push(_arg_vals[std::stoi(token.substr(1))-1]);
+            numbers.push(_arg_vals.at(std::stoi(token.substr(1))-1));
         }
         else if (std::istringstream(token) >> number_token)
         {
-            numbers.push(number_token);
+            numbers.push(bool(number_token));
         }
         else
         {
-            if (Tokens::Operators::isOperator(token[0]))
+            if (Tokens::isOperator(token[0]))
             {
                 if(numbers.size()< 2)
                 {
                     throw ParserException(ParserException::ErrorCode::UNKNOWN);
                 }
-                double operant2(numbers.top());
+                auto operant2(numbers.top());
                 numbers.pop();
-                double operant1(numbers.top());
-                numbers.pop;
-                const Tokens::Operators::S_Operator& v_operator = Tokens::Operators::getOperator(token[0]);
+                auto operant1(numbers.top());
+                numbers.pop();
+                const Tokens::S_Operator& v_operator = Tokens::getOperator(token[0]);
                 numbers.push(v_operator.function(operant1, operant2));
+            } else if(token == "unary_minus")
+            {
+                if(numbers.size() < 1)
+                {
+                    throw ParserException(ParserException::ErrorCode::UNKNOWN);
+                }
+                auto operant = numbers.top();
+                numbers.pop();
+                numbers.push(!operant);
             }
         }
     }
@@ -237,10 +249,10 @@ double ShuntingYard::calculateFunc(const std::string& _RPN, const std::vector<do
  * @brief getVariableToken - function that checks if there is a spaning variable token at this position and if there is output it's length
  * @param _in - input string
  * @param _pos - position to check from
- * @param _function_number - maximum numbered variable to expect
- * @return -1 if not a variable, else - the lenght of a variable (>2 since each variable must be numbered)
+ * @param _var_number - maximum numbered variable to expect
+ * @return -1 if not a variable, else - the length of a variable (>2 since each variable must be numbered)
  */
-int ShuntingYard::getVariableToken(const std::string& _in, size_t _pos,size_t _function_number)
+int ShuntingYarder::getVariableToken(const std::string& _in, size_t _pos,size_t _var_number)
 {
     if (_in[_pos] == 'x')
     {
@@ -257,7 +269,7 @@ int ShuntingYard::getVariableToken(const std::string& _in, size_t _pos,size_t _f
         {
             throw ParserException(ParserException::ErrorCode::INVALID_VARIABLE);
         }
-        if (std::stoi(_in.substr(_pos + 1, count - 1)) > _function_number /*NUM_OF_FUNCTIONS*/)
+        if (std::stoi(_in.substr(_pos + 1, count - 1)) > _var_number /*NUM_OF_FUNCTIONS*/)
         {
             throw  ParserException(ParserException::ErrorCode::INVALID_VARIABLE);
         }
@@ -267,14 +279,14 @@ int ShuntingYard::getVariableToken(const std::string& _in, size_t _pos,size_t _f
 }
 
 /**
- * @brief operatorCompare - function that compares presedence of the current operator and the operator (or a left brace or a function) on top of the stack
+ * @brief operatorCompare - function that compares precedence of the current operator and the operator (or a left brace or a function) on top of the stack
  * @param _in_char - operator
  * @param _tops_of_stack - operator at the top of the stack
- * @return true if top of stack presedence is less(based on the associativity tag) and false otherwise
+ * @return true if top of stack precedence is less(based on the associativity tag) and false otherwise
  */
-bool ShuntingYard::operatorCompare(char _in_char, const std::string& _tops_of_stack)
+bool ShuntingYarder::operatorCompare(char _in_char, const std::string& _tops_of_stack)
 {
-    const Tokens::Operators::S_Operator& curr_operator = Tokens::Operators::getOperator(_in_char);
+    const Tokens::S_Operator& curr_operator = Tokens::getOperator(_in_char);
 	size_t top_of_stack_presedence;
 	if (_tops_of_stack == "(") // brace is not an operator
     {
@@ -286,8 +298,8 @@ bool ShuntingYard::operatorCompare(char _in_char, const std::string& _tops_of_st
     }
     else
     {
-        top_of_stack_presedence = Tokens::Operators::getOperator(_tops_of_stack.at(0)).presedence;
+        top_of_stack_presedence = Tokens::getOperator(_tops_of_stack.at(0)).precedence;
     }
-    return (curr_operator.associativity == Tokens::Operators::S_Operator::E_left && curr_operator.presedence <= top_of_stack_presedence) ||
-           (curr_operator.associativity == Tokens::Operators::S_Operator::E_right && curr_operator.presedence < top_of_stack_presedence);
+    return (curr_operator.associativity == Tokens::S_Operator::E_left && curr_operator.precedence <= top_of_stack_presedence) ||
+           (curr_operator.associativity == Tokens::S_Operator::E_right && curr_operator.precedence < top_of_stack_presedence);
 }

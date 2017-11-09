@@ -4,6 +4,7 @@
  * stores only the needed part
  * everything else is derived in member functions
  */
+#include <string>
 #include <vector>
 #include <stdexcept>
 #include "UtilityFunc.h"
