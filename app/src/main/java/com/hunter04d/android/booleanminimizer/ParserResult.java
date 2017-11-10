@@ -24,4 +24,7 @@ public class ParserResult
         return mHasSucceded;
     }
 
+
+
+
 }

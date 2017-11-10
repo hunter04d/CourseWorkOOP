@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -153,27 +154,30 @@ public class BooleanMinimizerFragment extends Fragment
                         {
                             mVector = result.getResult();
                             mBinding.inputLayoutFormula.setError(mVector);
+                            mBinding.buttonCalc.setActivated(true);
                         }
                         else // TODO: Output error here
                         {
                             mVector = result.getResult();
                             mBinding.inputLayoutFormula.setError(mVector);
+                            mBinding.buttonCalc.setActivated(false);
                         }
-
                         return;
                     }
                 }
                 mBinding.inputLayoutFormula.setHint("position: " + (mBinding.inputFormula.length() -1));
                 mIsExprMode = false;
-                if (s.length() != Math.pow(2, Math.ceil(Math.log(s.length())/ Math.log(2))))
+                if (s.length() == Math.pow(2, Math.ceil(Math.log(s.length())/ Math.log(2))))
                 {
-                    mBinding.inputLayoutFormula.setError("Boolean vector has to have power of 2 points");
+                    mBinding.inputLayoutFormula.setError(null);
+                    mVector = s.toString();
+                    mBinding.buttonCalc.setActivated(true);
+
                 }
                 else
                 {
-                    mBinding.inputLayoutFormula.setError(null);
-                    //mVector = s.toString();
-
+                    mBinding.inputLayoutFormula.setError("Boolean vector has to have power of 2 points");
+                    mBinding.buttonCalc.setActivated(false);
                 }
             }
 
@@ -182,6 +186,11 @@ public class BooleanMinimizerFragment extends Fragment
             {
 
             }
+        });
+        mBinding.buttonCalc.setOnClickListener((View v) ->
+        {
+            mBinding.webView.loadUrl("file:///android_asset/preloader.html");
+            new CalculateTask().execute(mVector);
         });
         return mBinding.getRoot();
     }
@@ -194,5 +203,36 @@ public class BooleanMinimizerFragment extends Fragment
         String str2 = mBinding.inputFormula.getText().toString().substring(end);
         mBinding.inputFormula.setText(str1 + string + str2);
         mBinding.inputFormula.setSelection(str1.length() + string.length());
+    }
+
+
+    private static class CalculateTask extends AsyncTask<String, Void, String>
+    {
+
+        @Override
+        protected String doInBackground(String... strings)
+        {
+            return  NativeLib.stringFromJNI(strings[0]);
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values)
+        {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(String s)
+        {
+           if (!s.equals("error"))
+           {
+                HtmlBuilder.result(s);
+                int i = 0;
+           }
+           else
+           {
+
+           }
+        }
     }
 }

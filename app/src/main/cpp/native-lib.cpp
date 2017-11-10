@@ -24,8 +24,7 @@ Java_com_hunter04d_android_booleanminimizer_NativeLib_stringFromJNI(JNIEnv *env,
         core_table.GetCore();
         MinimizedManager manager(core_table.ReturnRest(), core_table.ReturnCore());
         std::string out;
-        auto b = MinimizedManager::Namefy(manager.GetBest());
-        out += std::string(b[0].c_str()) + "\n" + std::string(b[1].c_str()) + "\n";
+        out = manager.GetBest();
         return env->NewStringUTF(out.c_str());
     }
     catch(...)
