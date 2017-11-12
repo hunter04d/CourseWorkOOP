@@ -53,7 +53,7 @@ Java_com_hunter04d_android_booleanminimizer_NativeLib_parseExpresion(JNIEnv *env
         env->ReleaseStringUTFChars(expr_, expr);
         auto ParserResult = env->FindClass("com/hunter04d/android/booleanminimizer/ParserResult");
         auto ctor = env->GetMethodID(ParserResult, "<init>", "(Ljava/lang/String;Z)V");
-        return env->NewObject(ParserResult, ctor, env->NewStringUTF(exception.what()), true);
+        return env->NewObject(ParserResult, ctor, env->NewStringUTF(exception.what()), false);
     }
 
 

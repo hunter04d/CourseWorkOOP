@@ -20,6 +20,15 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.hunter04d.android.booleanminimizer.databinding.FragmentBooleanMinimizerBinding;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import j2html.TagCreator;
+
+
 public class BooleanMinimizerFragment extends Fragment
 {
     private FragmentBooleanMinimizerBinding mBinding;
@@ -71,6 +80,7 @@ public class BooleanMinimizerFragment extends Fragment
         mBinding.buttonX5.setOnClickListener((view) -> addString("X5"));
         mBinding.buttonX6.setOnClickListener((view) -> addString("X6"));
         mBinding.buttonX7.setOnClickListener((view) -> addString("X7"));
+        mBinding.buttonX8.setOnClickListener((view) -> addString("X8"));
         mBinding.imageButton.setOnClickListener((view) -> {
             int start = mBinding.inputFormula.getSelectionStart();
             int end = mBinding.inputFormula.getSelectionEnd();
@@ -137,12 +147,13 @@ public class BooleanMinimizerFragment extends Fragment
                                 .replace("X5", "x5")
                                 .replace("X6", "x6")
                                 .replace("X7", "x7")
+                                .replace("X8","x8")
                                 .replace("¬", "-")
                                 .replace("∧","*")
                                 .replace("∨", "+")
                                 .replace("⊕", "^");
                         int varCount = 0;
-                        for (int i = 1; i <= 7;i++ )
+                        for (int i = 1; i <= 8;i++ )
                         {
                             if (expr.contains("x" + Integer.toString(i)))
                             {
@@ -154,13 +165,13 @@ public class BooleanMinimizerFragment extends Fragment
                         {
                             mVector = result.getResult();
                             mBinding.inputLayoutFormula.setError(mVector);
-                            mBinding.buttonCalc.setActivated(true);
+                            mBinding.buttonCalc.setEnabled(true);
                         }
                         else // TODO: Output error here
                         {
                             mVector = result.getResult();
                             mBinding.inputLayoutFormula.setError(mVector);
-                            mBinding.buttonCalc.setActivated(false);
+                            mBinding.buttonCalc.setEnabled(false);
                         }
                         return;
                     }
@@ -170,14 +181,14 @@ public class BooleanMinimizerFragment extends Fragment
                 if (s.length() == Math.pow(2, Math.ceil(Math.log(s.length())/ Math.log(2))))
                 {
                     mBinding.inputLayoutFormula.setError(null);
-                    mVector = s.toString();
-                    mBinding.buttonCalc.setActivated(true);
+                    mVector = s.toString().replace('‒', '-');
+                    mBinding.buttonCalc.setEnabled(true);
 
                 }
                 else
                 {
                     mBinding.inputLayoutFormula.setError("Boolean vector has to have power of 2 points");
-                    mBinding.buttonCalc.setActivated(false);
+                    mBinding.buttonCalc.setEnabled(false);
                 }
             }
 
@@ -192,6 +203,7 @@ public class BooleanMinimizerFragment extends Fragment
             mBinding.webView.loadUrl("file:///android_asset/preloader.html");
             new CalculateTask().execute(mVector);
         });
+        mBinding.webView.getSettings().setJavaScriptEnabled(true);
         return mBinding.getRoot();
     }
 
@@ -206,13 +218,18 @@ public class BooleanMinimizerFragment extends Fragment
     }
 
 
-    private static class CalculateTask extends AsyncTask<String, Void, String>
+    private class CalculateTask extends AsyncTask<String, Void, String>
     {
 
         @Override
         protected String doInBackground(String... strings)
         {
-            return  NativeLib.stringFromJNI(strings[0]);
+            String nativeOut = NativeLib.stringFromJNI(strings[0]);
+            if (nativeOut.equals("error"))
+            {
+                return "error";
+            }
+            else return HtmlBuilder.result(nativeOut);
         }
 
         @Override
@@ -224,15 +241,37 @@ public class BooleanMinimizerFragment extends Fragment
         @Override
         protected void onPostExecute(String s)
         {
-           if (!s.equals("error"))
-           {
-                HtmlBuilder.result(s);
-                int i = 0;
-           }
-           else
-           {
-
-           }
+            InputStream open = null;
+            try
+            {
+                open =  getActivity().getAssets().open("base.html");
+                File file = new File(getActivity().getFilesDir(), "res.html");
+                if (file.exists())
+                {
+                    if (file.delete() == false)
+                    {
+                        throw new IOException();
+                    }
+                }
+                file.createNewFile();
+                FileOutputStream out = new FileOutputStream(file);
+                byte[] buffer = new byte[1024];
+                int read;
+                while((read = open.read(buffer)) != -1)
+                {
+                    out.write(buffer, 0, read);
+                }
+                byte[] write = (s +"</body>" + "</html>").getBytes();
+                out.write(write, 0, write.length);
+                open.close();
+                out.flush();
+                out.close();
+                mBinding.webView.loadUrl("file:///" + file.toString());
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 }

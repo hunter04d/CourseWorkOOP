@@ -44,7 +44,7 @@ void ShuntingYarder::preAnalize()
 		}
 		if(curr_char == ')' && i <(input_expr.size()-1)) // after a closing right brace before an operand
 		{
-			if(!Tokens::isCharOperator(input_expr[i + 1]))
+			if(!(Tokens::isCharOperator(input_expr[i + 1]) || input_expr[i+1] == ')' || input_expr[i+1] == '('))
 			{
 				input_expr.insert(input_expr.begin() + (i+1), '*');
 			}
@@ -53,6 +53,13 @@ void ShuntingYarder::preAnalize()
         {
             auto& prev_char = input_expr[i-1];
             if(prev_char == '0' || prev_char == '1')
+            {
+                input_expr.insert(input_expr.begin() + i, '*');
+            }
+        }
+        if (curr_char == '-' && i != 0)
+        {
+            if(isdigit(input_expr[i-1]))
             {
                 input_expr.insert(input_expr.begin() + i, '*');
             }
@@ -128,7 +135,7 @@ ShuntingYarder ShuntingYarder::parse(size_t _var_number) //to RPN
 				throw ParserException(ParserException::ErrorCode::OPERATOR_BEFORE_RIGHT_BRACE, pos +1);
 			}
             bool found_left_parenthesis = false;
-            while (!(stack.empty() || (found_left_parenthesis = stack.top() == "(")))
+            while (!(stack.empty() || (found_left_parenthesis = (stack.top() == "("))))
             {
                 out += stack.top() + ' ';
                 stack.pop();

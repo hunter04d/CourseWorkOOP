@@ -27,7 +27,7 @@ public:
     }
 
 
-	ShuntingYarder parse(size_t _var_number = 7);//  prototype of a function function to convert a function from infix to postfix notation
+	ShuntingYarder parse(size_t _var_number = 8);//  prototype of a function function to convert a function from infix to postfix notation
 
     std::string getVector(size_t _var_num)
     {
