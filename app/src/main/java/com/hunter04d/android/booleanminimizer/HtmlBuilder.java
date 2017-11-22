@@ -32,6 +32,7 @@ public class HtmlBuilder
                     out.append("bar(X").append(count).append(')');
                 }
                 count++;
+               // out.append("᠎"); TODO: complain at mathjax
             }
             out.append("vv");
         }

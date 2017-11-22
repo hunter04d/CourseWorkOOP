@@ -8,11 +8,15 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,7 +67,10 @@ public class BooleanMinimizerFragment extends Fragment
         mBinding.executePendingBindings();
         mBinding.inputFormula.clearFocus();
         mBinding.inputFormula.setShowSoftInputOnFocus(false);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(mBinding.custToolbar);
+        setHasOptionsMenu(true);
         //mBinding.inputFormula.clearFocus();
+        SharedPreferenceManager.getVarNames(getContext());
         mBinding.button0.setOnClickListener(v -> addString("0"));
         mBinding.button1.setOnClickListener(v -> addString("1"));
         mBinding.buttonDash.setOnClickListener((view) -> addString("‒"));
@@ -207,6 +214,12 @@ public class BooleanMinimizerFragment extends Fragment
         return mBinding.getRoot();
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        inflater.inflate(R.menu.menu_boolean_minimizer, menu);
+    }
+
     private void addString(String string)
     {
         int start = mBinding.inputFormula.getSelectionStart();
@@ -216,8 +229,23 @@ public class BooleanMinimizerFragment extends Fragment
         mBinding.inputFormula.setText(str1 + string + str2);
         mBinding.inputFormula.setSelection(str1.length() + string.length());
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.action_settings:
+                //TODO:
+                return true;
+            case R.id.action_history:
+                //TODO:
+                return true;
+            default:
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+        }
 
-
+    }
     private class CalculateTask extends AsyncTask<String, Void, String>
     {
 
