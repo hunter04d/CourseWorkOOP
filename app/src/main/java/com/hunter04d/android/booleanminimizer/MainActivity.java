@@ -7,8 +7,6 @@ import android.widget.TextView;
 
 public class MainActivity extends SingleFragmentActivity
 {
-
-
     @Override
     protected Fragment createFragment()
     {

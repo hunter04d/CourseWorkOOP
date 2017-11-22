@@ -1,6 +1,7 @@
 package com.hunter04d.android.booleanminimizer;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
@@ -35,9 +36,11 @@ import j2html.TagCreator;
 
 public class BooleanMinimizerFragment extends Fragment
 {
+    private static int REQUEST_OPTIONS = 1;
     private FragmentBooleanMinimizerBinding mBinding;
     private boolean mIsExprMode = true;
     private String mVector;
+    private String[] mVarNames;
     public static BooleanMinimizerFragment newInstance()
     {
         BooleanMinimizerFragment fragment = new BooleanMinimizerFragment();
@@ -49,7 +52,7 @@ public class BooleanMinimizerFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-        setRetainInstance(true);
+        //setRetainInstance(true);
         super.onCreate(savedInstanceState);
     }
 
@@ -63,6 +66,7 @@ public class BooleanMinimizerFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
+
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_boolean_minimizer, container, false);
         mBinding.executePendingBindings();
         mBinding.inputFormula.clearFocus();
@@ -70,7 +74,7 @@ public class BooleanMinimizerFragment extends Fragment
         ((AppCompatActivity) getActivity()).setSupportActionBar(mBinding.custToolbar);
         setHasOptionsMenu(true);
         //mBinding.inputFormula.clearFocus();
-        SharedPreferenceManager.getVarNames(getContext());
+        setVarNames();
         mBinding.button0.setOnClickListener(v -> addString("0"));
         mBinding.button1.setOnClickListener(v -> addString("1"));
         mBinding.buttonDash.setOnClickListener((view) -> addString("‒"));
@@ -80,14 +84,6 @@ public class BooleanMinimizerFragment extends Fragment
         mBinding.buttonNot.setOnClickListener((view) -> addString("¬"));
         mBinding.buttonBraceLeft.setOnClickListener((view) -> addString("("));
         mBinding.buttonBraceRight.setOnClickListener((view) -> addString(")"));
-        mBinding.buttonX1.setOnClickListener((view) -> addString("X1"));
-        mBinding.buttonX2.setOnClickListener((view) -> addString("X2"));
-        mBinding.buttonX3.setOnClickListener((view) -> addString("X3"));
-        mBinding.buttonX4.setOnClickListener((view) -> addString("X4"));
-        mBinding.buttonX5.setOnClickListener((view) -> addString("X5"));
-        mBinding.buttonX6.setOnClickListener((view) -> addString("X6"));
-        mBinding.buttonX7.setOnClickListener((view) -> addString("X7"));
-        mBinding.buttonX8.setOnClickListener((view) -> addString("X8"));
         mBinding.imageButton.setOnClickListener((view) -> {
             int start = mBinding.inputFormula.getSelectionStart();
             int end = mBinding.inputFormula.getSelectionEnd();
@@ -146,15 +142,11 @@ public class BooleanMinimizerFragment extends Fragment
                         mBinding.inputLayoutFormula.setError(null);
                         mBinding.inputLayoutFormula.setHint(getString(R.string.enter_expression));
                         String expr = s.toString();
+                        for (int i = 0; i < 8; ++i)
+                        {
+                            expr = expr.replace(mVarNames[i], "x" + (i + 1));
+                        }
                         expr  = expr
-                                .replace("X1", "x1")
-                                .replace("X2", "x2")
-                                .replace("X3","x3")
-                                .replace("X4", "x4")
-                                .replace("X5", "x5")
-                                .replace("X6", "x6")
-                                .replace("X7", "x7")
-                                .replace("X8","x8")
                                 .replace("¬", "-")
                                 .replace("∧","*")
                                 .replace("∨", "+")
@@ -214,6 +206,31 @@ public class BooleanMinimizerFragment extends Fragment
         return mBinding.getRoot();
     }
 
+    private void setVarNames()
+    {
+        mBinding.executePendingBindings();
+        mVarNames = SharedPreferenceManager.getVarNames(getContext());
+        //mVarNames = "X1 X2 X3 X4 X5 X6 X7 X8".split(" ");
+        mBinding.buttonX1.setText(mVarNames[0]);
+        mBinding.buttonX2.setText(mVarNames[1]);
+        mBinding.buttonX3.setText(mVarNames[2]);
+        mBinding.buttonX4.setText(mVarNames[3]);
+        mBinding.buttonX5.setText(mVarNames[4]);
+        mBinding.buttonX6.setText(mVarNames[5]);
+        mBinding.buttonX7.setText(mVarNames[6]);
+        mBinding.buttonX8.setText(mVarNames[7]);
+
+        mBinding.buttonX1.setOnClickListener((view) -> addString(mVarNames[0]));
+        mBinding.buttonX2.setOnClickListener((view) -> addString(mVarNames[1]));
+        mBinding.buttonX3.setOnClickListener((view) -> addString(mVarNames[2]));
+        mBinding.buttonX4.setOnClickListener((view) -> addString(mVarNames[3]));
+        mBinding.buttonX5.setOnClickListener((view) -> addString(mVarNames[4]));
+        mBinding.buttonX6.setOnClickListener((view) -> addString(mVarNames[5]));
+        mBinding.buttonX7.setOnClickListener((view) -> addString(mVarNames[6]));
+        mBinding.buttonX8.setOnClickListener((view) -> addString(mVarNames[7]));
+        mBinding.executePendingBindings();
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
     {
@@ -235,7 +252,8 @@ public class BooleanMinimizerFragment extends Fragment
         switch (item.getItemId())
         {
             case R.id.action_settings:
-                //TODO:
+                Intent i = new Intent(getActivity(), SettingsActivity.class);
+                startActivityForResult(i, REQUEST_OPTIONS);
                 return true;
             case R.id.action_history:
                 //TODO:
@@ -246,6 +264,17 @@ public class BooleanMinimizerFragment extends Fragment
         }
 
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == REQUEST_OPTIONS)
+        {
+           setVarNames();
+           getActivity().recreate();
+        }
+    }
+
     private class CalculateTask extends AsyncTask<String, Void, String>
     {
 
