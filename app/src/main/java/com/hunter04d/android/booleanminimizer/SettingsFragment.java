@@ -13,6 +13,7 @@ import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.hunter04d.android.booleanminimizer.databinding.FragmentSettingsBinding;
@@ -20,6 +21,8 @@ import com.hunter04d.android.booleanminimizer.databinding.FragmentSettingsBindin
 import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static android.content.Context.INPUT_METHOD_SERVICE;
 
 
 public class SettingsFragment extends Fragment implements SettingsActivity.OnBackPressedListener
@@ -50,7 +53,7 @@ public class SettingsFragment extends Fragment implements SettingsActivity.OnBac
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings, container, false);
         mBinding.executePendingBindings();
 
-        mBinding.settingsX1Layout.clearFocus();
+        mBinding.settingsX1.clearFocus();
         InputFilter filter = (source, start, end, dest, dstart, dend) ->
         {
             if (source.toString().equals(""))
@@ -64,7 +67,7 @@ public class SettingsFragment extends Fragment implements SettingsActivity.OnBac
                 Toast.makeText(getContext(), "Variable must start with a letter and have 1 or 2 numbers after it", Toast.LENGTH_SHORT).show();
                 return "";
             }
-            return null;
+            return source.toString().toUpperCase();
         };
         ((AppCompatActivity) getActivity()).setSupportActionBar(mBinding.settingsToolbar);
         mBinding.settingsToolbar.setTitle(R.string.settings);
@@ -91,19 +94,10 @@ public class SettingsFragment extends Fragment implements SettingsActivity.OnBac
         return mBinding.getRoot();
     }
     @Override
-    public void onDestroyView()
-    {
-        //TODO: return to the Main Fragment as String and aply changes there
-
-
-        super.onDestroyView();
-
-
-    }
-
-    @Override
     public void onBackPressed()
     {
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
         mVarNames[0] = mBinding.settingsX1.getText().toString();
         mVarNames[1] = mBinding.settingsX2.getText().toString();
         mVarNames[2] = mBinding.settingsX3.getText().toString();

@@ -78,7 +78,6 @@ public class BooleanMinimizerFragment extends Fragment
         mBinding.inputFormula.setShowSoftInputOnFocus(false);
         ((AppCompatActivity) getActivity()).setSupportActionBar(mBinding.custToolbar);
         setHasOptionsMenu(true);
-        //mBinding.inputFormula.clearFocus();
         mVarNames = SharedPreferenceManager.getVarNames(getContext());
         setVarNames();
         mBinding.button0.setOnClickListener(v -> addString("0"));
@@ -110,7 +109,7 @@ public class BooleanMinimizerFragment extends Fragment
                 mBinding.inputFormula.setSelection(str1.length());
             }
         });
-        mBinding.imageButton2.setOnClickListener((view) -> {mBinding.inputFormula.setText("");  mBinding.inputFormula.clearFocus();});
+        mBinding.imageButton2.setOnClickListener((view) -> {mBinding.inputFormula.setText("");  mBinding.inputFormula.clearFocus(); mBinding.webView.loadData("<html><body></body></html>", "text/html", "utf-8");});
         mBinding.inputLayoutFormula.setErrorEnabled(true);
         mBinding.inputFormula.addTextChangedListener(new TextWatcher() {
             @Override
@@ -187,12 +186,14 @@ public class BooleanMinimizerFragment extends Fragment
                         {
                             mVector = result.getResult();
                             mBinding.inputLayoutFormula.setError(mVector);
+                            mBinding.webView.loadData("<html><body></body></html>", "text/html", "utf-8");
                             mBinding.buttonCalc.setEnabled(false);
                         }
                         return;
                     }
                 }
                 mBinding.inputLayoutFormula.setHint("position: " + (mBinding.inputFormula.length() -1));
+                mBinding.webView.loadData("<html><body></body></html>", "text/html", "utf-8");
                 mIsExprMode = false;
                 if (s.length() == Math.pow(2, Math.ceil(Math.log(s.length())/ Math.log(2))))
                 {
@@ -289,6 +290,7 @@ public class BooleanMinimizerFragment extends Fragment
                 {
                     mVarNames = data.getStringExtra(SettingsFragment.RESULT_VAR_NAMES).split(" ");
                     setVarNames();
+                    mBinding.inputFormula.clearFocus();
                 }
             }
 
@@ -301,6 +303,14 @@ public class BooleanMinimizerFragment extends Fragment
         @Override
         protected String doInBackground(String... strings)
         {
+            if (strings[0].matches("^1+$"))
+            {
+                return OutputWriter.writeToBaseHTML(TagCreator.p("1").render(), getActivity());
+            }
+            if (strings[0].matches("^0+$"))
+            {
+                return OutputWriter.writeToBaseHTML(TagCreator.p("0").render(), getActivity());
+            }
             String nativeOut = NativeLib.stringFromJNI(strings[0]);
             if (nativeOut.equals("error"))
             {

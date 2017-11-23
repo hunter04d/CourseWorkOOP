@@ -15,6 +15,10 @@ public class HtmlBuilder
     }
     public static String result(String res, String[] varNames)
     {
+        if (res.isEmpty())
+        {
+            return p("`0`").render();
+        }
         String[] parts = res.split("v");
         StringBuilder out = new StringBuilder("`");
         for (String part : parts)
@@ -47,6 +51,10 @@ public class HtmlBuilder
         if (parts.length != 1)
         {
             out.delete(out.length()-4, out.length());
+        }
+        else
+        {
+            out.append('`');
         }
         return p(out.toString()).render();
     }
