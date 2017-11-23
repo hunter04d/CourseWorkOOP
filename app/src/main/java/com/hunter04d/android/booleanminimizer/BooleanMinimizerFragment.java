@@ -30,6 +30,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import j2html.TagCreator;
 
@@ -142,9 +145,12 @@ public class BooleanMinimizerFragment extends Fragment
                         mBinding.inputLayoutFormula.setError(null);
                         mBinding.inputLayoutFormula.setHint(getString(R.string.enter_expression));
                         String expr = s.toString();
+                        String[] arr = Arrays.copyOf(mVarNames,8);
+                        Arrays.sort(arr, (s1, s2) -> Integer.compare(s2.length(), s1.length()));
+                        HashMap<String, String> namesMap = SharedPreferenceManager.getVarNamesMap(getContext());
                         for (int i = 0; i < 8; ++i)
                         {
-                            expr = expr.replace(mVarNames[i], "x" + (i + 1));
+                            expr = expr.replace(arr[i], namesMap.get(arr[i]).toLowerCase());
                         }
                         expr  = expr
                                 .replace("¬", "-")
@@ -271,7 +277,7 @@ public class BooleanMinimizerFragment extends Fragment
         if (requestCode == REQUEST_OPTIONS)
         {
            setVarNames();
-           getActivity().recreate();
+           //getActivity().recreate();
         }
     }
 
