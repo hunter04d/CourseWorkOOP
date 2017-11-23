@@ -2,6 +2,7 @@ package com.hunter04d.android.booleanminimizer;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.PatternMatcher;
@@ -21,8 +22,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class SettingsFragment extends Fragment
+public class SettingsFragment extends Fragment implements SettingsActivity.OnBackPressedListener
 {
+    public static String RESULT_VAR_NAMES = "varNames";
 
     public static SettingsFragment newInstance()
     {
@@ -47,6 +49,7 @@ public class SettingsFragment extends Fragment
     {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings, container, false);
         mBinding.executePendingBindings();
+
         mBinding.settingsX1Layout.clearFocus();
         InputFilter filter = (source, start, end, dest, dstart, dend) ->
         {
@@ -64,6 +67,9 @@ public class SettingsFragment extends Fragment
             return null;
         };
         ((AppCompatActivity) getActivity()).setSupportActionBar(mBinding.settingsToolbar);
+        mBinding.settingsToolbar.setTitle(R.string.settings);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mBinding.settingsToolbar.setNavigationOnClickListener(v -> {getActivity().onBackPressed();});
         mBinding.settingsX1.setFilters(new InputFilter[]{filter});
         mBinding.settingsX2.setFilters(new InputFilter[]{filter});
         mBinding.settingsX3.setFilters(new InputFilter[]{filter});
@@ -84,12 +90,20 @@ public class SettingsFragment extends Fragment
         mBinding.settingsX8.setText(mVarNames[7]);
         return mBinding.getRoot();
     }
-
     @Override
     public void onDestroyView()
     {
         //TODO: return to the Main Fragment as String and aply changes there
-        getActivity().setResult(Activity.RESULT_OK);
+
+
+        super.onDestroyView();
+
+
+    }
+
+    @Override
+    public void onBackPressed()
+    {
         mVarNames[0] = mBinding.settingsX1.getText().toString();
         mVarNames[1] = mBinding.settingsX2.getText().toString();
         mVarNames[2] = mBinding.settingsX3.getText().toString();
@@ -110,8 +124,10 @@ public class SettingsFragment extends Fragment
                 s.append(mVarNames[i].toUpperCase()).append(" ");
             }
         }
-        super.onDestroyView();
-        SharedPreferenceManager.setVarNames(getContext(), s.toString());
-
+        Intent i = new Intent();
+        String str = s.toString();
+        i.putExtra(RESULT_VAR_NAMES, str);
+        getActivity().setResult(Activity.RESULT_OK, i);
+        SharedPreferenceManager.setVarNames(getContext(), str);
     }
 }

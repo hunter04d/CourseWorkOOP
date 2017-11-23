@@ -10,4 +10,23 @@ public class SettingsActivity extends SingleFragmentActivity
     {
         return SettingsFragment.newInstance();
     }
+
+
+    @Override
+    public void onBackPressed()
+    {
+        for (Fragment f : getSupportFragmentManager().getFragments())
+        {
+            if (f instanceof  OnBackPressedListener)
+            {
+                ((OnBackPressedListener)f).onBackPressed();
+            }
+        }
+        super.onBackPressed();
+    }
+
+    public interface OnBackPressedListener
+    {
+        void onBackPressed();
+    }
 }

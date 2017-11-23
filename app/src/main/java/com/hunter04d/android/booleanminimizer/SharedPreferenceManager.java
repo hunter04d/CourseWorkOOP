@@ -1,5 +1,6 @@
 package com.hunter04d.android.booleanminimizer;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -29,8 +30,9 @@ public class SharedPreferenceManager
         }
         return hm;
     }
+    @SuppressLint("ApplySharedPref")
     public static void setVarNames(Context context, String s)
     {
-        PreferenceManager.getDefaultSharedPreferences(context).edit().putString(sVarNames, s).apply();
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putString(sVarNames, s).commit();
     }
 }

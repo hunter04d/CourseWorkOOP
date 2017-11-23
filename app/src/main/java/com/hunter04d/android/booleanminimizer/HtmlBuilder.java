@@ -13,31 +13,45 @@ public class HtmlBuilder
     {
         return "";
     }
-    public static String result(String res)
+    public static String result(String res, String[] varNames)
     {
         String[] parts = res.split("v");
         StringBuilder out = new StringBuilder("`");
         for (String part : parts)
         {
-            int count = 1;
+            int count = 0;
+            if (parts.length != 1)
+            {
+                out.append('(');
+            }
             for (char ch : part.toCharArray())
             {
 
                 if (ch == '1')
                 {
-                    out.append("X").append(count);
+                    out.append(varNames[count]).append("*");
                 }
                 else if(ch == '0')
                 {
-                    out.append("bar(X").append(count).append(')');
+                    out.append("bar(").append(varNames[count]).append(')').append("*");
                 }
                 count++;
                // out.append("᠎"); TODO: complain at mathjax
             }
-            out.append("vv");
+            out.deleteCharAt(out.length()-1);
+            if (parts.length != 1)
+            {
+                out.append(")` ∨ `");
+            }
         }
-        out.delete(out.length()-2, out.length());
-        out.append("`");
+        if (parts.length != 1)
+        {
+            out.delete(out.length()-4, out.length());
+        }
         return p(out.toString()).render();
+    }
+    public static String vector(String vector)
+    {
+        return h6("Function vector:").render() + p(vector).render();
     }
 }

@@ -36,6 +36,8 @@ import java.util.HashMap;
 
 import j2html.TagCreator;
 
+import static android.app.Activity.RESULT_OK;
+
 
 public class BooleanMinimizerFragment extends Fragment
 {
@@ -77,6 +79,7 @@ public class BooleanMinimizerFragment extends Fragment
         ((AppCompatActivity) getActivity()).setSupportActionBar(mBinding.custToolbar);
         setHasOptionsMenu(true);
         //mBinding.inputFormula.clearFocus();
+        mVarNames = SharedPreferenceManager.getVarNames(getContext());
         setVarNames();
         mBinding.button0.setOnClickListener(v -> addString("0"));
         mBinding.button1.setOnClickListener(v -> addString("1"));
@@ -147,10 +150,14 @@ public class BooleanMinimizerFragment extends Fragment
                         String expr = s.toString();
                         String[] arr = Arrays.copyOf(mVarNames,8);
                         Arrays.sort(arr, (s1, s2) -> Integer.compare(s2.length(), s1.length()));
-                        HashMap<String, String> namesMap = SharedPreferenceManager.getVarNamesMap(getContext());
+                        HashMap<String, String> namesMap = new HashMap<>(8);
                         for (int i = 0; i < 8; ++i)
                         {
-                            expr = expr.replace(arr[i], namesMap.get(arr[i]).toLowerCase());
+                            namesMap.put(mVarNames[i], "x" + (i+1));
+                        }
+                        for (int i = 0; i < 8; ++i)
+                        {
+                            expr = expr.replace(arr[i], namesMap.get(arr[i]));
                         }
                         expr  = expr
                                 .replace("¬", "-")
@@ -169,7 +176,8 @@ public class BooleanMinimizerFragment extends Fragment
                         if (result.HasSucceded())
                         {
                             mVector = result.getResult();
-                            mBinding.inputLayoutFormula.setError(mVector);
+                            //mBinding.inputLayoutFormula.setError(mVector);
+                            mBinding.webView.loadUrl(OutputWriter.writeToBaseHTML(HtmlBuilder.vector(mVector),getActivity()));
                             mBinding.buttonCalc.setEnabled(true);
                         }
                         else // TODO: Output error here
@@ -214,9 +222,6 @@ public class BooleanMinimizerFragment extends Fragment
 
     private void setVarNames()
     {
-        mBinding.executePendingBindings();
-        mVarNames = SharedPreferenceManager.getVarNames(getContext());
-        //mVarNames = "X1 X2 X3 X4 X5 X6 X7 X8".split(" ");
         mBinding.buttonX1.setText(mVarNames[0]);
         mBinding.buttonX2.setText(mVarNames[1]);
         mBinding.buttonX3.setText(mVarNames[2]);
@@ -234,7 +239,6 @@ public class BooleanMinimizerFragment extends Fragment
         mBinding.buttonX6.setOnClickListener((view) -> addString(mVarNames[5]));
         mBinding.buttonX7.setOnClickListener((view) -> addString(mVarNames[6]));
         mBinding.buttonX8.setOnClickListener((view) -> addString(mVarNames[7]));
-        mBinding.executePendingBindings();
     }
 
     @Override
@@ -276,8 +280,15 @@ public class BooleanMinimizerFragment extends Fragment
     {
         if (requestCode == REQUEST_OPTIONS)
         {
-           setVarNames();
-           //getActivity().recreate();
+            if (resultCode == RESULT_OK)
+            {
+                if (data != null)
+                {
+                    mVarNames = data.getStringExtra(SettingsFragment.RESULT_VAR_NAMES).split(" ");
+                    setVarNames();
+                }
+            }
+
         }
     }
 
@@ -290,9 +301,9 @@ public class BooleanMinimizerFragment extends Fragment
             String nativeOut = NativeLib.stringFromJNI(strings[0]);
             if (nativeOut.equals("error"))
             {
-                return "error";
+                return OutputWriter.writeToBaseHTML("error", getActivity());
             }
-            else return HtmlBuilder.result(nativeOut);
+            else return OutputWriter.writeToBaseHTML(HtmlBuilder.result(nativeOut, mVarNames), getActivity());
         }
 
         @Override
@@ -304,37 +315,7 @@ public class BooleanMinimizerFragment extends Fragment
         @Override
         protected void onPostExecute(String s)
         {
-            InputStream open = null;
-            try
-            {
-                open =  getActivity().getAssets().open("base.html");
-                File file = new File(getActivity().getFilesDir(), "res.html");
-                if (file.exists())
-                {
-                    if (file.delete() == false)
-                    {
-                        throw new IOException();
-                    }
-                }
-                file.createNewFile();
-                FileOutputStream out = new FileOutputStream(file);
-                byte[] buffer = new byte[1024];
-                int read;
-                while((read = open.read(buffer)) != -1)
-                {
-                    out.write(buffer, 0, read);
-                }
-                byte[] write = (s +"</body>" + "</html>").getBytes();
-                out.write(write, 0, write.length);
-                open.close();
-                out.flush();
-                out.close();
-                mBinding.webView.loadUrl("file:///" + file.toString());
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+            mBinding.webView.loadUrl(s);
         }
     }
 }
