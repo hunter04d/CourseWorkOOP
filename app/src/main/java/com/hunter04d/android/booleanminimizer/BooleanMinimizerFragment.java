@@ -153,7 +153,10 @@ public class BooleanMinimizerFragment extends Fragment
                         HashMap<String, String> namesMap = new HashMap<>(8);
                         for (int i = 0; i < 8; ++i)
                         {
-                            namesMap.put(mVarNames[i], "x" + (i+1));
+                            if (!namesMap.containsKey(mVarNames[i]))
+                            {
+                                namesMap.put(mVarNames[i], "x" + (i + 1));
+                            }
                         }
                         for (int i = 0; i < 8; ++i)
                         {
