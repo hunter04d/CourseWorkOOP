@@ -13,7 +13,31 @@ public class HtmlBuilder
     {
         return "";
     }
-    public static String result(String res, String[] varNames)
+    public static String result(String[] res, String[] varNames)
+    {
+        if (res.length == 1)
+        {
+            return pRes(res[0], varNames);
+        }
+        else
+        {
+            StringBuilder s = new StringBuilder();
+            for (int i = 0; i < res.length; ++i)
+            {
+                if (i == 0)
+                {
+                    s.append(h5("The best case is:").render()).append(pRes(res[0], varNames)).append(hr().render());
+                }
+                else
+                {
+                    s.append(p("Other case " + (i+1) + ":").render()).append(pRes(res[i], varNames)).append(hr().render());
+                }
+            }
+            s.delete(s.length()-4, s.length());
+            return s.toString();
+        }
+    }
+    private static String pRes(String res,String[] varNames)
     {
         if (res.isEmpty())
         {
@@ -40,7 +64,7 @@ public class HtmlBuilder
                     out.append("bar(").append(varNames[count]).append(')').append("*");
                 }
                 count++;
-               // out.append("᠎"); TODO: complain at mathjax
+                // out.append("᠎"); TODO: complain at mathjax
             }
             out.deleteCharAt(out.length()-1);
             if (parts.length != 1)

@@ -45,6 +45,7 @@ public class BooleanMinimizerFragment extends Fragment
     private FragmentBooleanMinimizerBinding mBinding;
     private boolean mIsExprMode = true;
     private String mVector;
+    private boolean mIsAllCases = false;
     private String[] mVarNames;
     public static BooleanMinimizerFragment newInstance()
     {
@@ -57,7 +58,7 @@ public class BooleanMinimizerFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-        //setRetainInstance(true);
+        setRetainInstance(true);
         super.onCreate(savedInstanceState);
     }
 
@@ -265,6 +266,10 @@ public class BooleanMinimizerFragment extends Fragment
     {
         switch (item.getItemId())
         {
+            case R.id.action_all_cases:
+                item.setChecked(!item.isChecked());
+                mIsAllCases = item.isChecked();
+                return true;
             case R.id.action_settings:
                 Intent i = new Intent(getActivity(), SettingsActivity.class);
                 startActivityForResult(i, REQUEST_OPTIONS);
@@ -311,8 +316,8 @@ public class BooleanMinimizerFragment extends Fragment
             {
                 return OutputWriter.writeToBaseHTML(TagCreator.p("0").render(), getActivity());
             }
-            String nativeOut = NativeLib.stringFromJNI(strings[0]);
-            if (nativeOut.equals("error"))
+            String[] nativeOut = NativeLib.stringFromJNI(strings[0], mIsAllCases);
+            if (nativeOut[0].equals("error"))
             {
                 return OutputWriter.writeToBaseHTML("error", getActivity());
             }

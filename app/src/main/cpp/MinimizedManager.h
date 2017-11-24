@@ -15,7 +15,7 @@ public:
 	{
 		std::sort(other_sets_sorted.begin(),other_sets_sorted.end(), [](const auto& set1, const auto& set2)
 		{
-			return std::count(set1.cbegin(), set1.cend(), '-') < std::count(set2.cbegin(), set2.cend(), '-');
+			return std::count(set1.cbegin(), set1.cend(), '-') > std::count(set2.cbegin(), set2.cend(), '-');
 		});
 	}
 
@@ -28,7 +28,7 @@ public:
 		}
 		else
 		{
-			for (const auto& set: other_sets)
+			for (const auto& set: other_sets_sorted)
 			{
 				out.push_back(core + set);
 			}

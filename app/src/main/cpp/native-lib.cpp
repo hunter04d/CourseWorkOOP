@@ -9,8 +9,8 @@
 
 
 extern "C"
-JNIEXPORT jstring JNICALL
-Java_com_hunter04d_android_booleanminimizer_NativeLib_stringFromJNI(JNIEnv *env, jclass instance, jstring str)
+JNIEXPORT jobjectArray JNICALL
+Java_com_hunter04d_android_booleanminimizer_NativeLib_stringFromJNI(JNIEnv *env, jclass instance, jstring str, jboolean is_all_cases)
 {
     auto inChar = env->GetStringUTFChars(str, 0);
     std::string in(inChar);
@@ -23,13 +23,30 @@ Java_com_hunter04d_android_booleanminimizer_NativeLib_stringFromJNI(JNIEnv *env,
                              last_func.AsFunctionBool_WithUnknowValuesAs(0));
         core_table.GetCore();
         MinimizedManager manager(core_table.ReturnRest(), core_table.ReturnCore());
-        std::string out;
-        out = manager.GetBest();
-        return env->NewStringUTF(out.c_str());
+
+
+
+        if (is_all_cases == false)
+        {
+            auto out = manager.GetBest();
+            auto ret= (jobjectArray)env->NewObjectArray(1,env->FindClass("java/lang/String"),env->NewStringUTF(""));
+            env->SetObjectArrayElement(ret,0, env->NewStringUTF(out.c_str()));
+            return ret;
+        }
+        else
+        {
+            auto out = manager.GetAll();
+            auto ret= (jobjectArray)env->NewObjectArray(out.size(),env->FindClass("java/lang/String"),env->NewStringUTF(""));
+            for(int i = 0; i < out.size(); ++i)
+            {
+                env->SetObjectArrayElement(ret,i, env->NewStringUTF(out[i].c_str()));
+            }
+            return ret;
+        }
     }
     catch(...)
     {
-        return env->NewStringUTF("error");
+        return (jobjectArray)env->NewObjectArray(1,env->FindClass("java/lang/String"),env->NewStringUTF("error"));
     }
 }
 
