@@ -23,7 +23,7 @@ public class SolutionsManager
 
     }
 
-    public SolutionsManager instance(Context context)
+    public static SolutionsManager get(Context context)
     {
         if (sSolutionsManager == null)
         {
@@ -37,7 +37,8 @@ public class SolutionsManager
     }
     public void insertSolution(Solution solution)
     {
-        if (getSolutionCount() == 100)
+        mDb.mSolutionDao().deleteLast();
+        if (mCount >= 100)
         {
             List<Solution> all = mDb.mSolutionDao().getAll();
             all.remove(0);
@@ -46,6 +47,10 @@ public class SolutionsManager
                 all.get(i).setUid(i+1);
             }
             mDb.mSolutionDao().setAll();
+        }
+        if (mCount < 100)
+        {
+            mCount++;
         }
         mDb.mSolutionDao().insertSolution(solution);
     }

@@ -86,4 +86,46 @@ public class HtmlBuilder
     {
         return h6("Function vector:").render() + p(vector).render();
     }
+
+    public static String linearResult(String res, String[] varNames)
+    {
+        if (res.isEmpty())
+        {
+            return "0";
+        }
+        String[] parts = res.split("v");
+        StringBuilder out = new StringBuilder();
+        for (String part : parts)
+        {
+            int count = 0;
+            if (parts.length != 1)
+            {
+                out.append('(');
+            }
+            for (char ch : part.toCharArray())
+            {
+
+                if (ch == '1')
+                {
+                    out.append(varNames[count]).append("*");
+                }
+                else if(ch == '0')
+                {
+                    out.append("¬").append(varNames[count]).append(')').append("*");
+                }
+                count++;
+                // out.append("᠎"); TODO: complain at mathjax
+            }
+            out.deleteCharAt(out.length()-1);
+            if (parts.length != 1)
+            {
+                out.append(")∨");
+            }
+        }
+        if (parts.length != 1)
+        {
+            out.delete(out.length()-1, out.length());
+        }
+        return  out.toString();
+    }
 }
