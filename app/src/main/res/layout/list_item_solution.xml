@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout>
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:gravity="right"
+        android:id="@+id/solution_list_expression"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="100"
+        android:textSize="18sp"
+        tools:text = "Expression"/>
+    <TextView
+        android:gravity="right"
+        android:id="@+id/solution_list_solution"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="solution"
+        android:textSize="18sp"
+        android:maxLines="100"
+        android:textColor="@color/LighthBlue700"/>
+</LinearLayout>
+</layout>
