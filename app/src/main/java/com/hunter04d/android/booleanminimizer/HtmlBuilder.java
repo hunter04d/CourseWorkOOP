@@ -111,7 +111,7 @@ public class HtmlBuilder
                 }
                 else if(ch == '0')
                 {
-                    out.append("¬").append(varNames[count]).append(')').append("*");
+                    out.append("¬").append(varNames[count]).append("*");
                 }
                 count++;
                 // out.append("᠎"); TODO: complain at mathjax

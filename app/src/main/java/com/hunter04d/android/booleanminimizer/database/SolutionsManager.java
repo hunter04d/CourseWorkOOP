@@ -18,9 +18,14 @@ public class SolutionsManager
     private SolutionsManager(Context context)
     {
         mDb = Room.databaseBuilder(context.getApplicationContext(),
-                AppDatabase.class, "solutiondatabase").build();
+                AppDatabase.class, "solutiondatabase").allowMainThreadQueries().build();
         mCount = mDb.mSolutionDao().getCount();
 
+    }
+
+    public int getCount()
+    {
+        return mCount;
     }
 
     public static SolutionsManager get(Context context)
@@ -31,15 +36,17 @@ public class SolutionsManager
     }
         return sSolutionsManager;
     }
+
+
     public List<Solution> getAllSolutions()
     {
        return mDb.mSolutionDao().getAll();
     }
     public void insertSolution(Solution solution)
     {
-        mDb.mSolutionDao().deleteLast();
         if (mCount >= 100)
         {
+            mDb.mSolutionDao().deleteLast();
             List<Solution> all = mDb.mSolutionDao().getAll();
             all.remove(0);
             for (int i = 0 ; i < all.size();++i)
@@ -53,6 +60,11 @@ public class SolutionsManager
             mCount++;
         }
         mDb.mSolutionDao().insertSolution(solution);
+    }
+
+    public void deleteAllSolutions()
+    {
+        mDb.mSolutionDao().deleteAll();
     }
     public int getSolutionCount()
     {

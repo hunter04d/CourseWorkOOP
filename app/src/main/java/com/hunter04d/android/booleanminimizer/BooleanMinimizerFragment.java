@@ -8,6 +8,7 @@ import android.databinding.ViewDataBinding;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -23,6 +24,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
+import com.hunter04d.android.booleanminimizer.database.Solution;
+import com.hunter04d.android.booleanminimizer.database.SolutionsManager;
 import com.hunter04d.android.booleanminimizer.databinding.FragmentBooleanMinimizerBinding;
 
 import java.io.File;
@@ -41,7 +44,8 @@ import static android.app.Activity.RESULT_OK;
 
 public class BooleanMinimizerFragment extends Fragment
 {
-    private static int REQUEST_OPTIONS = 1;
+    private static final int REQUEST_SOLUTION = 2;
+    private static final int REQUEST_OPTIONS = 1;
     private FragmentBooleanMinimizerBinding mBinding;
     private boolean mIsExprMode = true;
     private String mVector;
@@ -271,11 +275,12 @@ public class BooleanMinimizerFragment extends Fragment
                 mIsAllCases = item.isChecked();
                 return true;
             case R.id.action_settings:
-                Intent i = new Intent(getActivity(), SettingsActivity.class);
-                startActivityForResult(i, REQUEST_OPTIONS);
+                Intent settingsIntent = new Intent(getActivity(), SettingsActivity.class);
+                startActivityForResult(settingsIntent, REQUEST_OPTIONS);
                 return true;
             case R.id.action_history:
-                //TODO:
+                Intent solutionIntent = new Intent(getActivity(), SolutionListActivity.class);
+                startActivityForResult(solutionIntent, REQUEST_SOLUTION);
                 return true;
             default:
                 // Invoke the superclass to handle it.
@@ -321,7 +326,18 @@ public class BooleanMinimizerFragment extends Fragment
             {
                 return OutputWriter.writeToBaseHTML("error", getActivity());
             }
-            else return OutputWriter.writeToBaseHTML(HtmlBuilder.result(nativeOut, mVarNames), getActivity());
+            else
+            {
+                StringBuilder builder = new StringBuilder();
+                for(String varName : mVarNames)
+                {
+                    builder.append(varName).append(' ');
+                }
+                builder.deleteCharAt(builder.length()-1);
+                Solution s = new Solution(SolutionsManager.get(getContext()).getCount() + 1, mBinding.inputFormula.getText().toString(),HtmlBuilder.linearResult(nativeOut[0], mVarNames), builder.toString());
+                SolutionsManager.get(getContext()).insertSolution(s);
+                return OutputWriter.writeToBaseHTML(HtmlBuilder.result(nativeOut, mVarNames), getActivity());
+            }
         }
 
         @Override

@@ -13,7 +13,7 @@ import android.arch.persistence.room.PrimaryKey;
 public class Solution
 {
 
-    Solution(int uid,String expression, String linearResult, String varNames)
+    public Solution(int uid,String expression, String linearResult, String varNames)
     {
         this.uid = uid;
         this.expression = expression;

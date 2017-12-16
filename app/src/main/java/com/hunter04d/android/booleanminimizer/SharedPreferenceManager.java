@@ -30,9 +30,8 @@ public class SharedPreferenceManager
         }
         return hm;
     }
-    @SuppressLint("ApplySharedPref")
     public static void setVarNames(Context context, String s)
     {
-        PreferenceManager.getDefaultSharedPreferences(context).edit().putString(sVarNames, s).commit();
+        PreferenceManager.getDefaultSharedPreferences(context).edit().putString(sVarNames, s).apply();
     }
 }

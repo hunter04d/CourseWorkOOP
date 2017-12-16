@@ -71,7 +71,7 @@ public class SolutionListFragment extends Fragment
 
 
 
-    private class SolutionHolder extends RecyclerView.ViewHolder implements  View.OnClickListener
+    private class SolutionHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         TextView mExprEditText;
         TextView mSolutionEditText;
@@ -80,9 +80,8 @@ public class SolutionListFragment extends Fragment
         {
             super(inflater.inflate(id, parent, false));
             itemView.setOnClickListener(this);
-            mExprEditText = (EditText) itemView.findViewById(R.id.solution_list_expression);
-            mSolutionEditText = (EditText) itemView.findViewById(R.id.solution_list_solution);
-
+            mExprEditText = itemView.findViewById(R.id.solution_list_expression);
+            mSolutionEditText = itemView.findViewById(R.id.solution_list_solution);
         }
 
          public void bind(Solution solution)
@@ -116,7 +115,7 @@ public class SolutionListFragment extends Fragment
         @Override
         public void onBindViewHolder(SolutionHolder holder, int position)
         {
-            holder.bind(mSolutions.get(mSolutions.size() - position));
+            holder.bind(mSolutions.get(mSolutions.size() - position - 1));
         }
 
         @Override
