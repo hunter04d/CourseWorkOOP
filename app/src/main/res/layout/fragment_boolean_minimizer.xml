@@ -138,7 +138,7 @@
                     android:layout_width="64dp"
                     android:layout_height="56dp"
                     android:text="="
-                    android:textColor="@color/colorAccent"
+                    android:textColor="@android:color/white"
                     android:textSize="18sp"
                     android:theme="@style/MaterialButtonAccent"/>
             </GridLayout>
@@ -150,7 +150,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginTop="8dp"
                 android:src="@drawable/ic_backspace_white_24dp"
-                android:theme="@style/MaterialButtonAccent"
+                android:theme="@style/MaterialButtonAccentAccent400"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/input_layout_formula"/>
 

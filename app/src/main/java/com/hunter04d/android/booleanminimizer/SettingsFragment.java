@@ -83,7 +83,16 @@ public class SettingsFragment extends Fragment implements SettingsActivity.OnBac
         mBinding.settingsX7.setFilters(new InputFilter[]{filter});
         mBinding.settingsX8.setFilters(new InputFilter[]{filter});
         mVarNames = SharedPreferenceManager.getVarNames(getContext());
-        //mVarNames = "X1 X2 X3 X4 X5 X6 X7 X8".split(" ");
+        setSettingsButtonText();
+        mBinding.buttonReset.setOnClickListener(v ->
+        {
+            mVarNames = new String[]{"X1","X2", "X3", "X4", "X5", "X6", "X7", "X8"};
+            setSettingsButtonText();
+        });
+        return mBinding.getRoot();
+    }
+    private void setSettingsButtonText()
+    {
         mBinding.settingsX1.setText(mVarNames[0]);
         mBinding.settingsX2.setText(mVarNames[1]);
         mBinding.settingsX3.setText(mVarNames[2]);
@@ -92,8 +101,8 @@ public class SettingsFragment extends Fragment implements SettingsActivity.OnBac
         mBinding.settingsX6.setText(mVarNames[5]);
         mBinding.settingsX7.setText(mVarNames[6]);
         mBinding.settingsX8.setText(mVarNames[7]);
-        return mBinding.getRoot();
     }
+
     @Override
     public void onBackPressed()
     {

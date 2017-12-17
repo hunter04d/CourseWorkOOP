@@ -50,6 +50,8 @@ public class BooleanMinimizerFragment extends Fragment
 {
     private static final int REQUEST_SOLUTION = 2;
     private static final int REQUEST_OPTIONS = 1;
+    private static final int REQUEST_SOVLE = 3;
+    public static final String DIALOG_SOVLE = "DialogSolve";
     private FragmentBooleanMinimizerBinding mBinding;
     private boolean mIsExprMode = true;
     private String mVector;
@@ -98,6 +100,7 @@ public class BooleanMinimizerFragment extends Fragment
         mBinding.buttonNot.setOnClickListener((view) -> addString("¬",view));
         mBinding.buttonBraceLeft.setOnClickListener((view) -> addString("(",view));
         mBinding.buttonBraceRight.setOnClickListener((view) -> addString(")",view));
+
         mBinding.imageButton.setOnClickListener((view) -> {
             view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
             int start = mBinding.inputFormula.getSelectionStart();
@@ -239,6 +242,13 @@ public class BooleanMinimizerFragment extends Fragment
                 new CalculateTask().execute(mVector);
             }
         });
+        mBinding.buttonCalc.setOnLongClickListener(v ->
+        {
+            SolveOptionDialogFragment solveOptionDialogFragment = SolveOptionDialogFragment.newInstance();
+            solveOptionDialogFragment.setTargetFragment(BooleanMinimizerFragment.this, REQUEST_SOVLE);
+            solveOptionDialogFragment.show(getFragmentManager(), DIALOG_SOVLE);
+            return true;
+        });
         mBinding.webView.getSettings().setJavaScriptEnabled(true);
         return mBinding.getRoot();
     }
@@ -328,6 +338,24 @@ public class BooleanMinimizerFragment extends Fragment
                     mVarNames = data.getStringExtra(SolutionListFragment.RESULT_VAR_NAMES).split(" ");
                     setVarNames();
                     mBinding.inputFormula.setText(data.getStringExtra(SolutionListFragment.RESULT_EXPRESSION));
+                }
+            }
+        }
+        else if (requestCode == REQUEST_SOVLE)
+        {
+            if (resultCode == RESULT_OK)
+            {
+                if (data != null)
+                {
+                    int which = data.getIntExtra(SolveOptionDialogFragment.RESULT_WHICH, 0);
+                    if (which == 0)
+                    {
+                        mBinding.buttonCalc.callOnClick();
+                    }
+                    else
+                    {
+                        //TODO:
+                    }
                 }
             }
         }

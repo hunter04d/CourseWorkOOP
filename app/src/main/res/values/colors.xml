@@ -5,4 +5,8 @@
     <color name="colorAccent">#ff4081</color>
     <color name="LighthBlue500">#03A9F4</color>
     <color name="LighthBlue700">#0288D1</color>
+    <color name="LightBlue800">#0277BD</color>
+    <color name="LightBlue900">#01579B</color>
+    <color name="LighthBlueAccent400">#00B0FF</color>
+    <color name="LightBlueAccent700">#0091EA</color>
 </resources>

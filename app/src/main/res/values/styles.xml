@@ -13,4 +13,8 @@
         <item name="colorControlHighlight">@color/LighthBlue500</item>
         <item name="colorButtonNormal">@color/LighthBlue700</item>
     </style>
+    <style name="MaterialButtonAccentAccent400" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorControlHighlight">@color/LighthBlueAccent400</item>
+        <item name="colorButtonNormal">@color/LightBlue800</item>
+    </style>
 </resources>

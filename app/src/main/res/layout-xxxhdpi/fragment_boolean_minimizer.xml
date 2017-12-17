@@ -138,9 +138,9 @@
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:text="="
-                    android:textColor="@color/colorAccent"
+                    android:textColor="@android:color/white"
                     android:textSize="18sp"
-                    android:theme="@style/MaterialButtonAccent"/>
+                    android:theme="@style/MaterialButtonAccentAccent400"/>
             </GridLayout>
 
             <ImageButton
