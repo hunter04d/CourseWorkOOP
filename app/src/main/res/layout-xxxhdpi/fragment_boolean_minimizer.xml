@@ -82,60 +82,60 @@
 
                 <Button
                     android:id="@+id/button_x1"
-                    android:layout_width="64dp"
+                    android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:text="x1"
                     android:textSize="14sp"/>
 
                 <Button
                     android:id="@+id/button_x2"
-                    android:layout_width="64dp"
+                    android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:text="X2"
                     />
 
                 <Button
                     android:id="@+id/button_x3"
-                    android:layout_width="64dp"
+                    android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:text="X3"
                     />
 
                 <Button
                     android:id="@+id/button_x4"
-                    android:layout_width="64dp"
+                    android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:text="X4"
                     />
 
                 <Button
                     android:id="@+id/button_x5"
-                    android:layout_width="64dp"
+                    android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:text="X5"
                     />
 
                 <Button
                     android:id="@+id/button_x6"
-                    android:layout_width="64dp"
+                    android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:text="X6"/>
 
                 <Button
                     android:id="@+id/button_x7"
-                    android:layout_width="64dp"
+                    android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:text="X7"/>
 
                 <Button
                     android:id="@+id/button_x8"
-                    android:layout_width="64dp"
+                    android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:text="X8"/>
 
                 <Button
                     android:id="@+id/button_calc"
-                    android:layout_width="64dp"
+                    android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:text="="
                     android:textColor="@color/colorAccent"
@@ -170,8 +170,6 @@
                 android:id="@+id/webView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

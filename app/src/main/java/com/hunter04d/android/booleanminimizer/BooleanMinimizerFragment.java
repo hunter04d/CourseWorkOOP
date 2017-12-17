@@ -5,9 +5,12 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
+import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +18,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.TypedValue;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -85,16 +89,17 @@ public class BooleanMinimizerFragment extends Fragment
         setHasOptionsMenu(true);
         mVarNames = SharedPreferenceManager.getVarNames(getContext());
         setVarNames();
-        mBinding.button0.setOnClickListener(v -> addString("0"));
-        mBinding.button1.setOnClickListener(v -> addString("1"));
-        mBinding.buttonDash.setOnClickListener((view) -> addString("‒"));
-        mBinding.buttonAnd.setOnClickListener((view) -> addString("∧"));
-        mBinding.buttonOr.setOnClickListener((view) -> addString("∨"));
-        mBinding.buttonXor.setOnClickListener((view) -> addString("⊕"));
-        mBinding.buttonNot.setOnClickListener((view) -> addString("¬"));
-        mBinding.buttonBraceLeft.setOnClickListener((view) -> addString("("));
-        mBinding.buttonBraceRight.setOnClickListener((view) -> addString(")"));
+        mBinding.button0.setOnClickListener(v -> addString("0",v));
+        mBinding.button1.setOnClickListener(v -> addString("1",v));
+        mBinding.buttonDash.setOnClickListener((view) -> addString("‒",view));
+        mBinding.buttonAnd.setOnClickListener((view) -> addString("∧",view));
+        mBinding.buttonOr.setOnClickListener((view) -> addString("∨",view));
+        mBinding.buttonXor.setOnClickListener((view) -> addString("⊕",view));
+        mBinding.buttonNot.setOnClickListener((view) -> addString("¬",view));
+        mBinding.buttonBraceLeft.setOnClickListener((view) -> addString("(",view));
+        mBinding.buttonBraceRight.setOnClickListener((view) -> addString(")",view));
         mBinding.imageButton.setOnClickListener((view) -> {
+            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
             int start = mBinding.inputFormula.getSelectionStart();
             int end = mBinding.inputFormula.getSelectionEnd();
 
@@ -114,7 +119,13 @@ public class BooleanMinimizerFragment extends Fragment
                 mBinding.inputFormula.setSelection(str1.length());
             }
         });
-        mBinding.imageButton2.setOnClickListener((view) -> {mBinding.inputFormula.setText("");  mBinding.inputFormula.clearFocus(); mBinding.webView.loadData("<html><body></body></html>", "text/html", "utf-8");});
+        mBinding.imageButton2.setOnClickListener((view) ->
+        {
+            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+            mBinding.inputFormula.setText("");
+            mBinding.inputFormula.clearFocus();
+            mBinding.webView.loadData("<html><body></body></html>", "text/html", "utf-8");
+        });
         mBinding.inputLayoutFormula.setErrorEnabled(true);
         mBinding.inputFormula.addTextChangedListener(new TextWatcher() {
             @Override
@@ -222,8 +233,11 @@ public class BooleanMinimizerFragment extends Fragment
         });
         mBinding.buttonCalc.setOnClickListener((View v) ->
         {
-            mBinding.webView.loadUrl("file:///android_asset/preloader.html");
-            new CalculateTask().execute(mVector);
+            if (mVector != null)
+            {
+                mBinding.webView.loadUrl("file:///android_asset/preloader.html");
+                new CalculateTask().execute(mVector);
+            }
         });
         mBinding.webView.getSettings().setJavaScriptEnabled(true);
         return mBinding.getRoot();
@@ -240,14 +254,14 @@ public class BooleanMinimizerFragment extends Fragment
         mBinding.buttonX7.setText(mVarNames[6]);
         mBinding.buttonX8.setText(mVarNames[7]);
 
-        mBinding.buttonX1.setOnClickListener((view) -> addString(mVarNames[0]));
-        mBinding.buttonX2.setOnClickListener((view) -> addString(mVarNames[1]));
-        mBinding.buttonX3.setOnClickListener((view) -> addString(mVarNames[2]));
-        mBinding.buttonX4.setOnClickListener((view) -> addString(mVarNames[3]));
-        mBinding.buttonX5.setOnClickListener((view) -> addString(mVarNames[4]));
-        mBinding.buttonX6.setOnClickListener((view) -> addString(mVarNames[5]));
-        mBinding.buttonX7.setOnClickListener((view) -> addString(mVarNames[6]));
-        mBinding.buttonX8.setOnClickListener((view) -> addString(mVarNames[7]));
+        mBinding.buttonX1.setOnClickListener((view) -> addString(mVarNames[0],view));
+        mBinding.buttonX2.setOnClickListener((view) -> addString(mVarNames[1],view));
+        mBinding.buttonX3.setOnClickListener((view) -> addString(mVarNames[2],view));
+        mBinding.buttonX4.setOnClickListener((view) -> addString(mVarNames[3],view));
+        mBinding.buttonX5.setOnClickListener((view) -> addString(mVarNames[4],view));
+        mBinding.buttonX6.setOnClickListener((view) -> addString(mVarNames[5],view));
+        mBinding.buttonX7.setOnClickListener((view) -> addString(mVarNames[6],view));
+        mBinding.buttonX8.setOnClickListener((view) -> addString(mVarNames[7],view));
     }
 
     @Override
@@ -256,8 +270,9 @@ public class BooleanMinimizerFragment extends Fragment
         inflater.inflate(R.menu.menu_boolean_minimizer, menu);
     }
 
-    private void addString(String string)
+    private void addString(String string, View v)
     {
+        v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
         int start = mBinding.inputFormula.getSelectionStart();
         int end = mBinding.inputFormula.getSelectionEnd();
         String str1 = mBinding.inputFormula.getText().toString().substring(0, start);
@@ -303,7 +318,18 @@ public class BooleanMinimizerFragment extends Fragment
                     mBinding.inputFormula.clearFocus();
                 }
             }
-
+        }
+        else if(requestCode == REQUEST_SOLUTION)
+        {
+            if (resultCode == RESULT_OK)
+            {
+                if (data != null)
+                {
+                    mVarNames = data.getStringExtra(SolutionListFragment.RESULT_VAR_NAMES).split(" ");
+                    setVarNames();
+                    mBinding.inputFormula.setText(data.getStringExtra(SolutionListFragment.RESULT_EXPRESSION));
+                }
+            }
         }
     }
 

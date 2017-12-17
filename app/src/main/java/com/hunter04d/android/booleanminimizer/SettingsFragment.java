@@ -27,7 +27,7 @@ import static android.content.Context.INPUT_METHOD_SERVICE;
 
 public class SettingsFragment extends Fragment implements SettingsActivity.OnBackPressedListener
 {
-    public static String RESULT_VAR_NAMES = "varNames";
+    public static final String RESULT_VAR_NAMES = "varNames";
 
     public static SettingsFragment newInstance()
     {
@@ -60,18 +60,19 @@ public class SettingsFragment extends Fragment implements SettingsActivity.OnBac
             {
                 return null;
             }
-            Pattern pattern = Pattern.compile("^[a-zA-z]\\d{0,2}$");
+            Pattern pattern = Pattern.compile("^[a-zA-z][0-9]{0,2}$");
             Matcher matcher = pattern.matcher(dest.toString() + source.toString());
             if(!matcher.matches())
             {
                 Toast.makeText(getContext(), "Variable must start with a letter and have 1 or 2 numbers after it", Toast.LENGTH_SHORT).show();
-                return "";
+                return source;
             }
             return source.toString().toUpperCase();
         };
         ((AppCompatActivity) getActivity()).setSupportActionBar(mBinding.settingsToolbar);
         mBinding.settingsToolbar.setTitle(R.string.settings);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.settings);
         mBinding.settingsToolbar.setNavigationOnClickListener(v -> {getActivity().onBackPressed();});
         mBinding.settingsX1.setFilters(new InputFilter[]{filter});
         mBinding.settingsX2.setFilters(new InputFilter[]{filter});

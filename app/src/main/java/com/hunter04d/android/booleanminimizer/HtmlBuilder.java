@@ -119,12 +119,12 @@ public class HtmlBuilder
             out.deleteCharAt(out.length()-1);
             if (parts.length != 1)
             {
-                out.append(")∨");
+                out.append(") ∨ ");
             }
         }
         if (parts.length != 1)
         {
-            out.delete(out.length()-1, out.length());
+            out.delete(out.length()-3, out.length());
         }
         return  out.toString();
     }

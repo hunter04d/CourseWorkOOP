@@ -8,4 +8,5 @@
     <string name="show_history">Show history</string>
     <string name="show_all_cases">Show all cases</string>
     <string name="no_history_present">No history present</string>
+    <string name="history">History</string>
 </resources>
