@@ -1,21 +1,13 @@
 package com.hunter04d.android.booleanminimizer;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
-import android.media.AudioAttributes;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.HapticFeedbackConstants;
@@ -23,21 +15,13 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 
 import com.hunter04d.android.booleanminimizer.database.Solution;
 import com.hunter04d.android.booleanminimizer.database.SolutionsManager;
 import com.hunter04d.android.booleanminimizer.databinding.FragmentBooleanMinimizerBinding;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -56,6 +40,7 @@ public class BooleanMinimizerFragment extends Fragment
     private boolean mIsExprMode = true;
     private String mVector;
     private boolean mIsAllCases = false;
+    private CalculateTask mCalculateTask = null;
     private String[] mVarNames;
     public static BooleanMinimizerFragment newInstance()
     {
@@ -128,6 +113,10 @@ public class BooleanMinimizerFragment extends Fragment
             mBinding.inputFormula.setText("");
             mBinding.inputFormula.clearFocus();
             mBinding.webView.loadData("<html><body></body></html>", "text/html", "utf-8");
+            if (mCalculateTask != null)
+            {
+                mCalculateTask.cancel(true);
+            }
         });
         mBinding.inputLayoutFormula.setErrorEnabled(true);
         mBinding.inputFormula.addTextChangedListener(new TextWatcher() {
@@ -194,7 +183,7 @@ public class BooleanMinimizerFragment extends Fragment
                             }
                         }
                         ParserResult result = NativeLib.parseExpresion(expr, varCount);
-                        if (result.HasSucceded())
+                        if (result.hasSucceeded())
                         {
                             mVector = result.getResult();
                             //mBinding.inputLayoutFormula.setError(mVector);
@@ -239,7 +228,8 @@ public class BooleanMinimizerFragment extends Fragment
             if (mVector != null)
             {
                 mBinding.webView.loadUrl("file:///android_asset/preloader.html");
-                new CalculateTask().execute(mVector);
+                mCalculateTask = new CalculateTask();
+                mCalculateTask.execute(mVector);
             }
         });
         mBinding.buttonCalc.setOnLongClickListener(v ->
@@ -375,7 +365,11 @@ public class BooleanMinimizerFragment extends Fragment
             {
                 return OutputWriter.writeToBaseHTML(TagCreator.p("0").render(), getActivity());
             }
-            String[] nativeOut = NativeLib.stringFromJNI(strings[0], mIsAllCases);
+            String[] nativeOut = NativeLib.calculateMinification(strings[0], mIsAllCases);
+            if (isCancelled())
+            {
+                return "";
+            }
             if (nativeOut[0].equals("error"))
             {
                 return OutputWriter.writeToBaseHTML("error", getActivity());
@@ -392,6 +386,12 @@ public class BooleanMinimizerFragment extends Fragment
                 SolutionsManager.get(getContext()).insertSolution(s);
                 return OutputWriter.writeToBaseHTML(HtmlBuilder.result(nativeOut, mVarNames), getActivity());
             }
+        }
+
+        @Override
+        protected void onCancelled(String s)
+        {
+            super.onCancelled(s);
         }
 
         @Override

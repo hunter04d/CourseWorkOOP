@@ -11,7 +11,7 @@ public class NativeLib
     {
         System.loadLibrary("native-lib");
     }
-    public static native String[] stringFromJNI(String str, boolean isAllCases);
+    public static native String[] calculateMinification(String str, boolean isAllCases);
 
 
     public static native ParserResult parseExpresion(String expr, double varNum);

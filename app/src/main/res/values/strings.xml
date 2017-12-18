@@ -11,4 +11,5 @@
     <string name="history">History</string>
     <string name="reset_to_defaults">Reset To Defaults</string>
     <string name="solve_option_title">Choose how to solve</string>
+    <string name="detailed_solution">Detailed solution</string>
 </resources>

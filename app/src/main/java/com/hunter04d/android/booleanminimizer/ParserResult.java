@@ -7,21 +7,21 @@ package com.hunter04d.android.booleanminimizer;
 public class ParserResult
 {
     private String mResult;
-    private boolean mHasSucceded;
+    private boolean mHasSucceeded;
 
     public ParserResult(String str, boolean b)
     {
         mResult = str;
-        mHasSucceded = b;
+        mHasSucceeded = b;
     }
     public String getResult()
     {
         return mResult;
     }
 
-    public boolean HasSucceded()
+    public boolean hasSucceeded()
     {
-        return mHasSucceded;
+        return mHasSucceeded;
     }
 
 

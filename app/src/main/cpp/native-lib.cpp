@@ -10,7 +10,7 @@
 
 extern "C"
 JNIEXPORT jobjectArray JNICALL
-Java_com_hunter04d_android_booleanminimizer_NativeLib_stringFromJNI(JNIEnv *env, jclass instance, jstring str, jboolean is_all_cases)
+Java_com_hunter04d_android_booleanminimizer_NativeLib_calculateMinification(JNIEnv *env, jclass instance, jstring str, jboolean is_all_cases)
 {
     auto inChar = env->GetStringUTFChars(str, 0);
     std::string in(inChar);
