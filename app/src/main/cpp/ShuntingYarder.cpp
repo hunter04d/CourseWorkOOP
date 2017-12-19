@@ -80,7 +80,7 @@ void ShuntingYarder::preAnalize()
  * @param _var_number - total number of functions to expect (max number of variables allowed)
  * @return function in posfix notation ready to be calculed
  */
-ShuntingYarder ShuntingYarder::parse(size_t _var_number) //to RPN
+ShuntingYarder& ShuntingYarder::parse(size_t _var_number) //to RPN
 {
     size_t pos(0);
     std::stack<std::string> stack;

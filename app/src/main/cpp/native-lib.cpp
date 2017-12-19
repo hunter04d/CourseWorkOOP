@@ -23,9 +23,6 @@ Java_com_hunter04d_android_booleanminimizer_NativeLib_calculateMinification(JNIE
                              last_func.AsFunctionBool_WithUnknowValuesAs(0));
         core_table.GetCore();
         MinimizedManager manager(core_table.ReturnRest(), core_table.ReturnCore());
-
-
-
         if (is_all_cases == false)
         {
             auto out = manager.GetBest();
@@ -75,4 +72,10 @@ Java_com_hunter04d_android_booleanminimizer_NativeLib_parseExpresion(JNIEnv *env
 
 
 
+}extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_hunter04d_android_booleanminimizer_NativeLib_stringOfVarTable(JNIEnv *env, jclass type, jint n, jint num_of_vars)
+{
+    VarTable v(num_of_vars,n);
+    return env->NewStringUTF(v.toString().c_str());
 }

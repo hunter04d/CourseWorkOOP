@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 
 import com.hunter04d.android.booleanminimizer.database.Solution;
 import com.hunter04d.android.booleanminimizer.database.SolutionsManager;
@@ -307,47 +308,57 @@ public class BooleanMinimizerFragment extends Fragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        if (requestCode == REQUEST_OPTIONS)
+        switch (requestCode)
         {
-            if (resultCode == RESULT_OK)
-            {
-                if (data != null)
+            case REQUEST_OPTIONS:
+                if (resultCode == RESULT_OK)
                 {
-                    mVarNames = data.getStringExtra(SettingsFragment.RESULT_VAR_NAMES).split(" ");
-                    setVarNames();
-                    mBinding.inputFormula.clearFocus();
-                }
-            }
-        }
-        else if(requestCode == REQUEST_SOLUTION)
-        {
-            if (resultCode == RESULT_OK)
-            {
-                if (data != null)
-                {
-                    mVarNames = data.getStringExtra(SolutionListFragment.RESULT_VAR_NAMES).split(" ");
-                    setVarNames();
-                    mBinding.inputFormula.setText(data.getStringExtra(SolutionListFragment.RESULT_EXPRESSION));
-                }
-            }
-        }
-        else if (requestCode == REQUEST_SOVLE)
-        {
-            if (resultCode == RESULT_OK)
-            {
-                if (data != null)
-                {
-                    int which = data.getIntExtra(SolveOptionDialogFragment.RESULT_WHICH, 0);
-                    if (which == 0)
+                    if (data != null)
                     {
-                        mBinding.buttonCalc.callOnClick();
-                    }
-                    else
-                    {
-                        //TODO:
+                        mVarNames = data.getStringExtra(SettingsFragment.RESULT_VAR_NAMES).split(" ");
+                        setVarNames();
+                        mBinding.inputFormula.clearFocus();
                     }
                 }
-            }
+                break;
+            case REQUEST_SOLUTION:
+                if (resultCode == RESULT_OK)
+                {
+                    if (data != null)
+                    {
+                        mVarNames = data.getStringExtra(SolutionListFragment.RESULT_VAR_NAMES).split(" ");
+                        setVarNames();
+                        mBinding.inputFormula.setText(data.getStringExtra(SolutionListFragment.RESULT_EXPRESSION));
+                    }
+                }
+                break;
+            case REQUEST_SOVLE:
+                if (resultCode == RESULT_OK)
+                {
+                    if (data != null)
+                    {
+                        int which = data.getIntExtra(SolveOptionDialogFragment.RESULT_WHICH, 0);
+                        if (which == 0)
+                        {
+                            mBinding.buttonCalc.callOnClick();
+                        }
+                        else
+                        {
+                            if (mVector != null)
+                            {
+                                Intent i = new Intent(getActivity(), WebViewActivity.class);
+                                i.putExtra(WebViewActivity.EXTRA_FUNCTION, mBinding.inputFormula.getText().toString());
+                                i.putExtra(WebViewActivity.EXTRA_VECTOR, mVector);
+                                i.putExtra(WebViewActivity.EXTRA_IS_EXPR_MODE, mIsExprMode);
+                                startActivity(i);
+                                //TODO:
+                            }
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
         }
     }
 

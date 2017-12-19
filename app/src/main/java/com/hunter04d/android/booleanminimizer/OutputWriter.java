@@ -13,6 +13,71 @@ import java.io.InputStream;
 
 public class OutputWriter
 {
+    private Context mContext;
+    private File mFile;
+    private FileOutputStream mStream;
+
+    OutputWriter(Context context, String fileName)
+    {
+        mContext = context;
+        InputStream open;
+        try
+        {
+            open =  context.getAssets().open("base.html");
+            mFile = new File(context.getFilesDir(), fileName);
+            if (mFile.exists())
+            {
+                if (! mFile.delete())
+                {
+                    throw new IOException();
+                }
+            }
+            mFile.createNewFile();
+            mStream = new FileOutputStream(mFile);
+            byte[] buffer = new byte[1024];
+            int read;
+            while((read = open.read(buffer)) != -1)
+            {
+                mStream.write(buffer, 0, read);
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public OutputWriter append(String s)
+    {
+        try
+        {
+            byte[] write = s.getBytes();
+            mStream.write(write, 0, write.length);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return this;
+    }
+    public String save()
+    {
+        try
+        {
+            byte[] write = ("</body>" + "</html>").getBytes();
+            mStream.write(write, 0, write.length);
+            mStream.flush();
+            mStream.close();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return "file:///" + mFile.toString();
+
+    }
+
+
+
     public static String writeToBaseHTML(String s, Context context)
     {
         InputStream open;

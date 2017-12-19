@@ -52,6 +52,15 @@ public:
 	{
 		return NumOfVars;
 	}
+	std::string toString()
+	{
+		std::string out;
+		for (size_t i = 0; i < NumOfVars; ++i) {
+			bool  b = F_VarTable[i];
+			out += '0' + b;
+		}
+		return out;
+	}
 
 	friend std::ostream& operator<<(std::ostream& _cout, VarTable& _VarTable);
 };

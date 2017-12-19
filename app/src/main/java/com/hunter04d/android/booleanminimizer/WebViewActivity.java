@@ -1,5 +1,6 @@
 package com.hunter04d.android.booleanminimizer;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ public class WebViewActivity extends SingleFragmentActivity
     @Override
     protected Fragment createFragment()
     {
-        return WebViewFragment.newInstance();
+        Intent i = getIntent();
+        return WebViewFragment.newInstance(i.getStringExtra(EXTRA_VECTOR), i.getStringExtra(EXTRA_FUNCTION), i.getBooleanExtra(EXTRA_IS_EXPR_MODE, false));
     }
 }

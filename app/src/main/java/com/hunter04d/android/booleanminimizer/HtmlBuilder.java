@@ -1,5 +1,9 @@
 package com.hunter04d.android.booleanminimizer;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
+
 import j2html.tags.ContainerTag;
 
 import static j2html.TagCreator.*;
@@ -9,10 +13,6 @@ import static j2html.TagCreator.*;
 
 public class HtmlBuilder
 {
-    public String truthTable(String vector)
-    {
-        return "";
-    }
     public static String result(String[] res, String[] varNames)
     {
         if (res.length == 1)
@@ -85,6 +85,25 @@ public class HtmlBuilder
     public static String vector(String vector)
     {
         return h6("Function vector:").render() + p(vector).render();
+    }
+
+    public static String truthTable(String vector)
+    {
+        char[] chars = vector.toCharArray();
+        List<Integer> numeration = new ArrayList<>(vector.length());
+        for (int i = 0; i < vector.length(); ++i)
+        {
+            numeration.add(i);
+        }
+        return table(
+                thead(
+                        tr(
+                th("Variables"),
+                th("Value")
+                        )
+                ),
+                tbody(each(numeration, num -> tr(td(NativeLib.stringOfVarTable(num, (int) (Math.log(vector.length()) / Math.log(2)))), td(Character.toString(vector.charAt(num)))))
+        )).withClass("responsive-table").render();
     }
 
     public static String linearResult(String res, String[] varNames)

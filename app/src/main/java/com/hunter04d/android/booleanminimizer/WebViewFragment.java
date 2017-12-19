@@ -18,15 +18,24 @@ import com.hunter04d.android.booleanminimizer.databinding.FragmentWebViewBinding
 
 public class WebViewFragment extends Fragment
 {
+    public static final String ARG_VECTOR = "vector";
+    public static final String ARG_FUNCTION = "function";
+    public static final String ARG_IS_EXPR_MODE = "expr_mode";
 
+    private static final String mFileName = "detailedSolution.html";
     private FragmentWebViewBinding mBinding;
     private BuildSolutionTask mTask;
+    private String mVector;
+    private String mFunction;
+    private boolean mIsExprMode;
 
-    public static WebViewFragment newInstance()
+    public static WebViewFragment newInstance(String vector, String function, boolean isExprMode)
     {
 
         Bundle args = new Bundle();
-
+        args.putString(ARG_VECTOR, vector);
+        args.putString(ARG_FUNCTION, function);
+        args.putBoolean(ARG_IS_EXPR_MODE, isExprMode);
         WebViewFragment fragment = new WebViewFragment();
         fragment.setArguments(args);
         return fragment;
@@ -44,12 +53,18 @@ public class WebViewFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_web_view, container, false);
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_web_view, container,false);
         mBinding.executePendingBindings();
         ((AppCompatActivity) getActivity()).setSupportActionBar(mBinding.custToolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.detailed_solution);
         mBinding.solveWebView.getSettings().setJavaScriptEnabled(true);
+        Bundle b = getArguments();
+        mVector = b.getString(ARG_VECTOR);
+        mFunction = b.getString(ARG_FUNCTION);
+        mBinding.solveWebView.loadUrl("file:///android_asset/preloader_determinate.html");
+        mTask = new BuildSolutionTask();
+        mTask.execute();
         return mBinding.getRoot();
     }
 
@@ -69,7 +84,9 @@ public class WebViewFragment extends Fragment
         @Override
         protected String doInBackground(String... strings)
         {
-            return null;
+            OutputWriter outputWriter = new OutputWriter(getContext(), mFileName);
+            outputWriter.append(HtmlBuilder.truthTable(mVector));
+            return outputWriter.save();
         }
 
         @Override
@@ -87,7 +104,7 @@ public class WebViewFragment extends Fragment
         @Override
         protected void onPostExecute(String s)
         {
-            super.onPostExecute(s);
+            mBinding.solveWebView.loadUrl(s);
         }
     }
 }

@@ -5,7 +5,7 @@
 
 #include <string>
 
-class TagBuiler
+class TagBuilder
 {
 private:
 
@@ -19,14 +19,14 @@ public:
         DONTCLOSE = 1
     };
 
-    TagBuiler(const char* name, const char* value) : name(name), value(value)
+    TagBuilder(const char* name, const char* value) : name(name), value(value)
     {
     }
 
-    TagBuiler* withAttribute(const char* name, const char* value)
+    TagBuilder& withAttribute(const char* name, const char* value)
     {
         attributes += std::string(name) + "=\"" + value + "\" ";
-        return this;
+        return *this;
     }
 
     std::string build(BuildParams param)
