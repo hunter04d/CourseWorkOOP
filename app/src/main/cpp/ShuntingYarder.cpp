@@ -49,7 +49,7 @@ void ShuntingYarder::preAnalize()
 				input_expr.insert(input_expr.begin() + (i+1), '*');
 			}
 		}
-        if((curr_char == '0' || curr_char == '1') && i != 0)
+        if((curr_char == '0' || curr_char == '1') && i != 0) //TODO:THIS MIGHT NOT HAVE A PURPOSE
         {
             auto& prev_char = input_expr[i-1];
             if(prev_char == '0' || prev_char == '1')
