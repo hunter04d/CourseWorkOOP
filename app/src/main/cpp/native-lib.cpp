@@ -6,7 +6,7 @@
 #include "IndexTable.h"
 #include "FunctionBool.h"
 #include "ParserException.h"
-
+#include <sstream>
 
 extern "C"
 JNIEXPORT jobjectArray JNICALL
@@ -78,4 +78,47 @@ Java_com_hunter04d_android_booleanminimizer_NativeLib_stringOfVarTable(JNIEnv *e
 {
     VarTable v(num_of_vars,n);
     return env->NewStringUTF(v.toString().c_str());
+}extern "C"
+JNIEXPORT jobjectArray JNICALL
+Java_com_hunter04d_android_booleanminimizer_NativeLib_getTablesHtml(JNIEnv *env, jclass type, jstring str_, jstring str1_)
+{
+    const char *str = env->GetStringUTFChars(str_, 0);
+    std::string in(str);
+    const char *str1 = env->GetStringUTFChars(str1_, 0);
+    std::string varNames(str1);
+    env->ReleaseStringUTFChars(str_, str);
+    env->ReleaseStringUTFChars(str1_, str1);
+    std::istringstream iss(varNames);
+    std::vector<std::string> var_names;
+    do
+    {
+        std::string subs;
+        iss >> subs;
+        var_names.push_back(subs);
+    } while (iss);
+    try {
+        std::vector<std::string> tables;
+        Undefined_FunctionBool last_func = Undefined_FunctionBool(in);
+        IndexTable index_table(last_func.numberOfvars);
+        tables.push_back(index_table.PrintNames(var_names) + index_table.Print());
+        index_table.RemoveFromFunction(last_func.AsFunctionBool_WithUnknowValuesAs(1));
+        tables.push_back(index_table.PrintNames(var_names) + index_table.Print());
+        CoreTable core_table(index_table.GetTermsInCoreTableForm(), last_func.AsFunctionBool_WithUnknowValuesAs(0));
+        tables.push_back(core_table.Print(var_names));
+        core_table.GetCore();
+        tables.push_back(core_table.Print(var_names));
+        MinimizedManager manager(core_table.ReturnRest(), core_table.ReturnCore());
+        //tables.push_back(core_table.ReturnCore());
+
+        auto ret= (jobjectArray)env->NewObjectArray(5,env->FindClass("java/lang/String"),env->NewStringUTF(""));
+        for(int i = 0; i < tables.size(); ++i) {
+            env->SetObjectArrayElement(ret, i, env->NewStringUTF(tables[i].c_str()));
+        }
+        return ret;
+
+    }
+    catch(...)
+    {
+        return (jobjectArray)env->NewObjectArray(1,env->FindClass("java/lang/String"),env->NewStringUTF("error"));
+    }
 }

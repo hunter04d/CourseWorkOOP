@@ -11,6 +11,7 @@
 #include <sstream>
 #include <numeric>
 #include "TermIndex.h"
+#include "TagBuilder.h"
 
 
 struct Edge
@@ -199,114 +200,103 @@ public:
 	}
 	
 
-	std::string Print()
+	std::string Print(const std::vector<std::string>& var_names)
 	{
 		std::ostringstream cout;
+		cout << "<thead><tr><th>";
 		for (auto k = 0; k < num_of_vars; ++k)
 		{
-			cout << '-';
+			cout << var_names[k];
 		}
-		cout << '|';
+        cout << "</th>";
+
 		for (auto j = 0; j < coloumlns; ++j)
 		{
-	
-				if (terms.at(j).is_crossed)
+			cout << "<th>";
+			if (terms.at(j).is_crossed)
+			{
+				cout << "<s>";
+			}
+			for (auto k1 = 0; k1 < num_of_vars; ++k1)
+			{
+				switch (int(terms.at(j).term.at(k1)))
 				{
-					for (auto k1 = 0; k1 < num_of_vars; ++k1)
+					case 0:
 					{
-						cout << '-';
+						cout << 0;
+						break;
 					}
-				}
-				else
-				{
-					for (auto k1 = 0; k1 < num_of_vars; ++k1)
+					case 1:
 					{
-						switch (terms.at(j).term.at(k1))
-						{
-							case 0:
-							{
-								cout << 0;
-								break;
-							}
-							case 1:
-							{
-								cout << 1;
-								break;
-							}
-							default: cout << '-';
-						}
+						cout << 1;
+						break;
 					}
+					default: cout << '-';
 				}
-				cout << '|';
+			}
+			if (terms.at(j).is_crossed)
+			{
+				cout << "</s>";
+			}
+			cout << "</th>";
 				
 		}
-		cout << '\n';
-		int n = cout.str().size();
-		for(int i = 0; i < n; ++i)
-		{
-			cout << '_';
-		}
-		cout << '\n';
+		cout << "</tr></thead><tbody>";
 		for (auto i = 0; i < rows; ++i)
 		{
-			
+			cout << "<tr><td><b>";
 				if (min_terms.at(i).is_crossed)
 				{
-					for (auto k1 = 0; k1 < num_of_vars; ++k1)
+					cout << "<s>";
+				}
+				for (auto k1 = 0; k1 < num_of_vars; ++k1)
+				{
+					switch (min_terms.at(i).term.at(k1))
 					{
-						cout << '-';
+						case 0:
+						{
+							cout << 0;
+							break;
+						}
+						case 1:
+						{
+							cout << 1;
+							break;
+						}
+						default: cout << '-';
 					}
 				}
-				else
-				{
-					for (auto k1 = 0; k1 < num_of_vars; ++k1)
-					{
-						switch (min_terms.at(i).term.at(k1))
-						{
-							case 0:
-							{
-								cout << 0;
-								break;
-							}
-							case 1:
-							{
-								cout << 1;
-								break;
-							}
-							default: cout << '-';
-						}
-					}
+			if (min_terms.at(i).is_crossed)
+			{
+				cout << "</s>";
 			}
-			cout << '|';
+			cout << "</b></th>";
 			for (auto j = 0; j < coloumlns; ++j)
 			{
-				if (F_table.at(i).at(j).deleted)
+                cout << "<td>";
+                if (F_table.at(i).at(j).includes_min_term)
+                {
+                    if (F_table.at(i).at(j).deleted)
+                    {
+                        cout << "<s>X</s>";
+                    } else {
+                        cout << 'X';
+                    }
+                }
+                else if (F_table.at(i).at(j).deleted)
 				{
-					for (auto k1 = 0; k1 < num_of_vars; ++k1)
-					{
-						cout << '-';
-					}
+					cout << '-';
 				}
-				else if (F_table.at(i).at(j).includes_min_term)
-				{
-					cout << 'x';
-					for (auto k1 = 1; k1 < num_of_vars; ++k1)
-					{
-						cout << ' ';
-					}
-				}
+
 				else
 				{
-					for (auto k1 = 0; k1 < num_of_vars; ++k1)
-					{
-						cout << ' ';
-					}
+					cout << ' ';
 				}
-				cout << '|';
+                cout << "</td>";
 			}
-			cout << '\n';
+			cout << "</tr>";
 		}
-		cout << '\n';
+        cout << "</tbody>";
 		return cout.str();
 	}
 };

@@ -18,7 +18,11 @@ public class SharedPreferenceManager
         String s = PreferenceManager.getDefaultSharedPreferences(context).getString(sVarNames, "X1 X2 X3 X4 X5 X6 X7 X8");
         return s.split(" ");
     }
-
+    @NonNull
+    public static String getVarNamesString(Context context)
+    {
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(sVarNames, "X1 X2 X3 X4 X5 X6 X7 X8");
+    }
     public static HashMap<String, String> getVarNamesMap(Context context)
     {
         String s = PreferenceManager.getDefaultSharedPreferences(context).getString(sVarNames, "X1 X2 X3 X4 X5 X6 X7 X8");

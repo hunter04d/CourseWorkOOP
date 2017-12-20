@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 
 import com.hunter04d.android.booleanminimizer.databinding.FragmentWebViewBinding;
 
+import j2html.TagCreator;
+
 /**
  * Created by Den on 18.12.2017.
  */
@@ -86,6 +88,12 @@ public class WebViewFragment extends Fragment
         {
             OutputWriter outputWriter = new OutputWriter(getContext(), mFileName);
             outputWriter.append(HtmlBuilder.truthTable(mVector));
+            outputWriter.append(TagCreator.p(getActivity().getString(R.string.delailed_solution_1, (int)(Math.log(mVector.length()) / Math.log(2)))).render());
+            String[] arr = NativeLib.getTablesHtml(mVector, SharedPreferenceManager.getVarNamesString(getContext()));
+            for (int i =0;i < arr.length; ++i)
+            {
+                outputWriter.append("<table class=\"centered bordered\">" +  arr[i] + "</table>");
+            }
             return outputWriter.save();
         }
 

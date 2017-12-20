@@ -12,6 +12,7 @@ public class NativeLib
         System.loadLibrary("native-lib");
     }
     public static native String[] calculateMinification(String str, boolean isAllCases);
+    public static native String[] getTablesHtml(String str, String str1);
 
     public static native String stringOfVarTable(int n, int num_of_vars);
     public static native ParserResult parseExpresion(String expr, double varNum);

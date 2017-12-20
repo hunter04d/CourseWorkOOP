@@ -1,5 +1,6 @@
 ﻿#include "IndexTable.h"
 #include "FunctionBool.h"
+#include "TagBuilder.h"
 #include <string>
 #include <sstream>
 
@@ -46,42 +47,46 @@ IndexTable::IndexTable(size_t NumOfVars) :size(2 << NumOfVars - 1), F_Table(size
 	}
 }
 
-std::string IndexTable::PrintNames()
+std::string IndexTable::PrintNames(std::vector<std::string> var_names)
 {
 	std::ostringstream cout;
-	cout << ' ';
+    std::vector<std::string> naming_copy  = naming;
+    cout << "<thead><tr>";
 	for (int i = 0; i < size; ++i)
 	{
-		cout << naming.at(i) << "  ";
+		cout << TagBuilder("th", naming_copy[i].c_str()).build(TagBuilder::BuildParams::CLOSETAG);
 	}
+    cout << "</tr></thead>";
 	return cout.str();
 }
 
 std::string IndexTable::Print()
 {
 	std::ostringstream cout;
-	for (auto i = 0; i < size; ++i)
+    cout << "<tbody>";
+	for (auto i = 0u; i < size; ++i)
 	{
-		for (auto j = 0; j < size; ++j)
+        cout << "<tr>";
+		for (auto j = 0u; j < size; ++j)
 		{
-			cout << std::setw(2);
-
-			for (auto k = 0; k < F_Table.at(i).at(j).value.size(); ++k)
+            cout << "<td>";
+            if (F_Table.at(i).at(j).is_removed)
+            {
+                cout << "<s>";
+            }
+			for (auto k = 0u; k < F_Table.at(i).at(j).value.size(); ++k)
 			{
-				if (F_Table.at(i).at(j).is_removed)
-				{
-					if (k == 0)
-					{
-						cout << 'R';
-					}
-					else cout << ' ';
-				}
-				else cout << F_Table.at(i).at(j).value.at(k);
+                cout << F_Table.at(i).at(j).value.at(k);
 			}
-			cout << " ";
+            if (F_Table.at(i).at(j).is_removed)
+            {
+                cout << "</s>";
+            }
+			cout << "</td>";
 		}
-		cout << '\n';
+		cout << "</tr>";
 	}
+    cout << "</tbody>";
 	return cout.str();
 }
 
@@ -170,28 +175,6 @@ void IndexTable::RemoveSimilar()
 		}
 	}
 }
-
-void IndexTable::PrintFile()
-{
-	std::ofstream fout;
-	fout.open("Text.txt");
-	for (int i = 0; i < size; ++i)
-	{
-		for (int j = 0; j < size; ++j)
-		{
-			fout << std::setw(2);
-			for (int k = 0; k < F_Table.at(i).at(j).value.size(); ++k)
-			{
-
-				fout << F_Table.at(i).at(j).value.at(k);
-			}
-			fout << " ";
-		}
-		fout << std::endl;
-	}
-	fout.close();
-}
-
 void IndexTable::Consume()
 {
 	size_t N = static_cast<size_t>(log2(size));

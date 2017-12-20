@@ -73,7 +73,7 @@ public:
 	//Printers
 	void PrintFile();
 
-	std::string PrintNames();
+	std::string PrintNames(std::vector<std::string> var_names);
 
 	std::string Print();
 
