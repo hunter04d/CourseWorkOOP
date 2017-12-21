@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import j2html.TagCreator;
 import j2html.tags.ContainerTag;
 
 import static j2html.TagCreator.*;
@@ -95,15 +96,12 @@ public class HtmlBuilder
         {
             numeration.add(i);
         }
-        return table(
-                thead(
-                        tr(
-                th("Variables"),
-                th("Value")
-                        )
-                ),
-                tbody(each(numeration, num -> tr(td(NativeLib.stringOfVarTable(num, (int) (Math.log(vector.length()) / Math.log(2)))), td(Character.toString(vector.charAt(num)))))
-        )).withClass("responsive-table").render();
+        StringBuilder b = new StringBuilder();
+        for (Integer num: numeration)
+        {
+            b.append(tr(td(NativeLib.stringOfVarTable(num, (int) (Math.log(vector.length()) / Math.log(2)))), td(Character.toString(vector.charAt(num)))).render());
+        }
+        return "<table class =\"responsive-table\"><thead><tr><th>Variables</th><th>Function</th></tr></thead><tbody>" + b.toString() + "</tbody>";
     }
 
     public static String linearResult(String res, String[] varNames)

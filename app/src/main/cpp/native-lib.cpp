@@ -108,9 +108,9 @@ Java_com_hunter04d_android_booleanminimizer_NativeLib_getTablesHtml(JNIEnv *env,
         core_table.GetCore();
         tables.push_back(core_table.Print(var_names));
         MinimizedManager manager(core_table.ReturnRest(), core_table.ReturnCore());
-        //tables.push_back(core_table.ReturnCore());
+        tables.push_back(manager.GetCore());
 
-        auto ret= (jobjectArray)env->NewObjectArray(5,env->FindClass("java/lang/String"),env->NewStringUTF(""));
+        auto ret= (jobjectArray)env->NewObjectArray(6,env->FindClass("java/lang/String"),env->NewStringUTF(""));
         for(int i = 0; i < tables.size(); ++i) {
             env->SetObjectArrayElement(ret, i, env->NewStringUTF(tables[i].c_str()));
         }

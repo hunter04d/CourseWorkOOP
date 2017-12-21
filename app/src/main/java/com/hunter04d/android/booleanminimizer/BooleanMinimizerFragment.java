@@ -194,7 +194,7 @@ public class BooleanMinimizerFragment extends Fragment
                         else // TODO: Output error here
                         {
                             mVector = result.getResult();
-                            mBinding.inputLayoutFormula.setError(mVector);
+                            mBinding.inputLayoutFormula.setError("Error: expression invalid");
                             mBinding.webView.loadData("<html><body></body></html>", "text/html", "utf-8");
                             mBinding.buttonCalc.setEnabled(false);
                         }

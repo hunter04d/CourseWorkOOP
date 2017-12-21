@@ -39,50 +39,9 @@ public:
 	{
 		return std::string(core + other_sets_sorted[0]);
 	}
-
-	std::vector<std::string> static Namefy(std::string _in)
-	{
-		if(_in[_in.size()-1] == 'v' || _in[_in.size()-1] == ' ')
-		{
-			_in.pop_back();
-		}
-		std::vector<std::string> out(2);
-		char name = 'a';
-		for (auto& ch : _in)
-		{
-			if (ch == 'v')
-			{
-				name = 'a';
-				out[0] += "   ";
-				out[1] += " v ";
-				continue;
-			}
-			if (ch == '1')
-			{
-				out[0].push_back(' ');
-				out[1].push_back(name);
-				++name;
-				continue;
-			}
-			else if (ch == '0')
-			{
-				out[0].push_back('_');
-				out[1].push_back(name);
-				++name;
-				continue;
-			}
-
-			else if (ch == '-')
-			{
-				++name;
-				continue;
-			}
-			else if (ch == '('|| ch == ')')
-			{
-				out[0].push_back(' ');
-			}
-		}
-		return out;
-	}
+	std::string GetCore()
+    {
+        return core.substr(0, core.size()-1);
+    }
 };
 

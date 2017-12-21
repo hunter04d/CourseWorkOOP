@@ -88,12 +88,18 @@ public class WebViewFragment extends Fragment
         {
             OutputWriter outputWriter = new OutputWriter(getContext(), mFileName);
             outputWriter.append(HtmlBuilder.truthTable(mVector));
-            outputWriter.append(TagCreator.p(getActivity().getString(R.string.delailed_solution_1, (int)(Math.log(mVector.length()) / Math.log(2)))).render());
+
             String[] arr = NativeLib.getTablesHtml(mVector, SharedPreferenceManager.getVarNamesString(getContext()));
-            for (int i =0;i < arr.length; ++i)
-            {
-                outputWriter.append("<table class=\"centered bordered\">" +  arr[i] + "</table>");
-            }
+            outputWriter.append(TagCreator.p(getActivity().getString(R.string.delailed_solution_1, (int)(Math.log(mVector.length()) / Math.log(2)))).render());
+            outputWriter.append("<table class=\"centered bordered\">" +  arr[0] + "</table>");
+            outputWriter.append(TagCreator.p(getActivity().getString(R.string.delailed_solution_2)).render());
+            outputWriter.append ("<table class=\"centered bordered\">" +  arr[1] + "</table>");
+            outputWriter.append(TagCreator.p(getActivity().getString(R.string.delailed_solution_3)).render());
+            outputWriter.append("<table class=\"centered bordered\">" +  arr[2] + "</table>");
+            outputWriter.append(TagCreator.p(getActivity().getString(R.string.delailed_solution_4)).render());
+            outputWriter.append("<table class=\"centered bordered\">" +  arr[3] + "</table>");
+            outputWriter.append(TagCreator.p(getActivity().getString(R.string.delailed_solution_5)).render());
+            outputWriter.append("<br>" + TagCreator.p(TagCreator.b(arr[4])).render());
             return outputWriter.save();
         }
 
