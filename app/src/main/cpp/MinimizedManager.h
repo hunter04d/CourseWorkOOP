@@ -43,5 +43,14 @@ public:
     {
         return core.substr(0, core.size()-1);
     }
+    std::vector<std::string> GetRest()
+    {
+        std::vector<std::string> out;
+        for (const auto& set: other_sets_sorted)
+        {
+            out.push_back(set.substr(0, core.size()-1));
+        }
+        return out;
+    }
 };
 

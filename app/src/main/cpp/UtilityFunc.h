@@ -12,7 +12,7 @@ namespace utility
 	std::vector<bool> toBinaryVector(size_t _Value, size_t _ofSize);
 	bool hasString(const std::string& comparable, const std::string& comparison);
 
-	inline long closesedPowerOf2(int n)
+	inline long closestPowerOf2(int n)
 	{
 		return long (ceil(log2(double(n))));
 	}

@@ -48,8 +48,22 @@ IndexTable::IndexTable(size_t NumOfVars) :size(2 << NumOfVars - 1), F_Table(size
 std::string IndexTable::PrintNames(std::vector<std::string> var_names)
 {
 	std::ostringstream cout;
-    std::vector<std::string> naming_copy  = naming;
+    std::vector<std::string> naming_copy = naming;
     cout << "<thead><tr>";
+    for (int i = 0; i < naming_copy.size() ; ++i)
+    {
+        std::vector<std::string> new_names(size);
+        for (const auto& x: naming[i])
+        {
+            new_names.push_back(var_names[x - 'a']);
+        }
+        std::string out;
+        for (const auto& new_name : new_names)
+        {
+            out += new_name;
+        }
+        naming_copy[i] = out;
+    }
 	for (int i = 0; i < size; ++i)
 	{
 		cout << TagBuilder("th", naming_copy[i].c_str()).build(TagBuilder::BuildParams::CLOSETAG);

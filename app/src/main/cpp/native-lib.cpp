@@ -10,7 +10,7 @@
 
 extern "C"
 JNIEXPORT jobjectArray JNICALL
-Java_com_hunter04d_android_booleanminimizer_NativeLib_calculateMinification(JNIEnv *env, jclass instance, jstring str, jboolean is_all_cases)
+Java_com_hunter04d_android_booleanminimizer_NativeLib_calculateMinimisation(JNIEnv *env, jclass instance, jstring str, jboolean is_all_cases)
 {
     auto inChar = env->GetStringUTFChars(str, 0);
     std::string in(inChar);
@@ -46,11 +46,9 @@ Java_com_hunter04d_android_booleanminimizer_NativeLib_calculateMinification(JNIE
         return (jobjectArray)env->NewObjectArray(1,env->FindClass("java/lang/String"),env->NewStringUTF("error"));
     }
 }
-
-
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_hunter04d_android_booleanminimizer_NativeLib_parseExpresion(JNIEnv *env, jclass  type, jstring expr_, jdouble varNum)
+Java_com_hunter04d_android_booleanminimizer_NativeLib_parseExpression(JNIEnv *env, jclass  type, jstring expr_, jdouble varNum)
 {
     const char *expr = env->GetStringUTFChars(expr_, 0);
     try
@@ -72,15 +70,16 @@ Java_com_hunter04d_android_booleanminimizer_NativeLib_parseExpresion(JNIEnv *env
 
 
 
-}extern "C"
+}
+extern "C"
 JNIEXPORT jstring JNICALL
 Java_com_hunter04d_android_booleanminimizer_NativeLib_stringOfVarTable(JNIEnv *env, jclass type, jint n, jint num_of_vars)
 {
     VarTable v(num_of_vars,n);
     return env->NewStringUTF(v.toString().c_str());
 }extern "C"
-JNIEXPORT jobjectArray JNICALL
-Java_com_hunter04d_android_booleanminimizer_NativeLib_getTablesHtml(JNIEnv *env, jclass type, jstring str_, jstring str1_)
+JNIEXPORT jobject JNICALL
+Java_com_hunter04d_android_booleanminimizer_NativeLib_getDetailedResult(JNIEnv *env, jclass type, jstring str_, jstring str1_)
 {
     const char *str = env->GetStringUTFChars(str_, 0);
     std::string in(str);
@@ -108,17 +107,34 @@ Java_com_hunter04d_android_booleanminimizer_NativeLib_getTablesHtml(JNIEnv *env,
         core_table.GetCore();
         tables.push_back(core_table.Print(var_names));
         MinimizedManager manager(core_table.ReturnRest(), core_table.ReturnCore());
-        tables.push_back(manager.GetCore());
-
-        auto ret= (jobjectArray)env->NewObjectArray(6,env->FindClass("java/lang/String"),env->NewStringUTF(""));
-        for(int i = 0; i < tables.size(); ++i) {
-            env->SetObjectArrayElement(ret, i, env->NewStringUTF(tables[i].c_str()));
+        auto mTables = (jobjectArray)env->NewObjectArray(4,env->FindClass("java/lang/String"),env->NewStringUTF(""));
+        for(int i = 0; i < tables.size(); ++i)
+        {
+            env->SetObjectArrayElement(mTables, i, env->NewStringUTF(tables[i].c_str()));
         }
-        return ret;
+        auto out = manager.GetAll();
+        auto ret= (jobjectArray)env->NewObjectArray(out.size(),env->FindClass("java/lang/String"),env->NewStringUTF(""));
+        for(int i = 0; i < out.size(); ++i)
+        {
+            env->SetObjectArrayElement(ret,i, env->NewStringUTF(out[i].c_str()));
+        }
+        std::string core = manager.GetCore();
+        auto rest = manager.GetRest();
+        auto mRest = (jobjectArray)env->NewObjectArray(rest.size(),env->FindClass("java/lang/String"),env->NewStringUTF(""));
+        for(int i = 0; i < rest.size(); ++i)
+        {
+            env->SetObjectArrayElement(mRest,i, env->NewStringUTF(rest[i].c_str()));
+        }
+        auto DetailedSolutionResult = env->FindClass("com/hunter04d/android/booleanminimizer/DetailedSolutionResult");
+        auto ctor = env->GetMethodID(DetailedSolutionResult, "<init>", "(Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;Z)V");
+        return env->NewObject(DetailedSolutionResult, ctor, env->NewStringUTF(core.c_str()),mRest, mTables, ret,
+                              true);
 
     }
     catch(...)
     {
-        return (jobjectArray)env->NewObjectArray(1,env->FindClass("java/lang/String"),env->NewStringUTF("error"));
+        auto DetailedSolutionResult = env->FindClass("com/hunter04d/android/booleanminimizer/DetailedSolutionResult");
+        auto ctor = env->GetMethodID(DetailedSolutionResult, "<init>", "()V");
+        return env->NewObject(DetailedSolutionResult, ctor);
     }
 }

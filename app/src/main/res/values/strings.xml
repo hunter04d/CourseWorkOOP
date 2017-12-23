@@ -12,9 +12,15 @@
     <string name="reset_to_defaults">Reset To Defaults</string>
     <string name="solve_option_title">Choose how to solve</string>
     <string name="detailed_solution">Detailed solution</string>
-    <string name="delailed_solution_1">The index table of %1$d variables look like this:</string>
-    <string name="delailed_solution_2">After we strike through all unneeded indexes the table look the following:</string>
-    <string name="delailed_solution_3">The core table of all remaniing minterm is like so:</string>
-    <string name="delailed_solution_4">Next we strike through all the row where minterm incules a term (marked by X on the table) and the corresponding columns</string>
-    <string name="delailed_solution_5">Minification core is:</string>
+    <string name="detailed_solution_0_1">The function defined by %s has this truth table:</string>
+    <string name="detailed_solution_0_2">The function defined by vector %s has this truth table:</string>
+    <string name="detailed_solution_1">The index table of %1$d variables look like this:</string>
+    <string name="detailed_solution_2">After we strike through all unneeded indexes the table look the following:</string>
+    <string name="detailed_solution_3">The core table of all remaniing minterm is like so:</string>
+    <string name="detailed_solution_4">Next we strike through all the row where minterm incules a term (marked by X on the table) and the corresponding columns</string>
+    <string name="detailed_solution_5">Minimisation core is:</string>
+    <string name="detailed_solution_6_1">The effective ways to cover all other uncovered terms are</string>
+    <string name="detailed_solution_6_2">Since the core covers all of the term, it is our answer</string>
+    <string name="detailed_solution_error">Something went terribly wrong during the sovle</string>
+    <string name="detailed_solution_7">So, the possible minimisations are:</string>
 </resources>

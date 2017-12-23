@@ -17,7 +17,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 
 import com.hunter04d.android.booleanminimizer.database.Solution;
 import com.hunter04d.android.booleanminimizer.database.SolutionsManager;
@@ -183,7 +182,7 @@ public class BooleanMinimizerFragment extends Fragment
                                 varCount = i;
                             }
                         }
-                        ParserResult result = NativeLib.parseExpresion(expr, varCount);
+                        ParserResult result = NativeLib.parseExpression(expr, varCount);
                         if (result.hasSucceeded())
                         {
                             mVector = result.getResult();
@@ -376,7 +375,7 @@ public class BooleanMinimizerFragment extends Fragment
             {
                 return OutputWriter.writeToBaseHTML(TagCreator.p("0").render(), getActivity());
             }
-            String[] nativeOut = NativeLib.calculateMinification(strings[0], mIsAllCases);
+            String[] nativeOut = NativeLib.calculateMinimisation(strings[0], mIsAllCases);
             if (isCancelled())
             {
                 return "";

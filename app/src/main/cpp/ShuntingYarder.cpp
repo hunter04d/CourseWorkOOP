@@ -3,7 +3,6 @@
 #include "Tokens.h"
 #include "ParserException.h"
 #include <ctype.h>
-
 #include <algorithm>
 #include <stack>
 #include <VarTable.h>

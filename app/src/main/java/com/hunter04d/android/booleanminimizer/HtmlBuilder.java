@@ -38,7 +38,7 @@ public class HtmlBuilder
             return s.toString();
         }
     }
-    private static String pRes(String res,String[] varNames)
+    public static String pRes(String res,String[] varNames)
     {
         if (res.isEmpty())
         {
@@ -101,7 +101,7 @@ public class HtmlBuilder
         {
             b.append(tr(td(NativeLib.stringOfVarTable(num, (int) (Math.log(vector.length()) / Math.log(2)))), td(Character.toString(vector.charAt(num)))).render());
         }
-        return "<table class =\"responsive-table\"><thead><tr><th>Variables</th><th>Function</th></tr></thead><tbody>" + b.toString() + "</tbody>";
+        return "<table class =\"responsive-table\"><thead><tr><th>Variables</th><th>Function</th></tr></thead><tbody>" + b.toString() + "</tbody></table>";
     }
 
     public static String linearResult(String res, String[] varNames)

@@ -64,6 +64,7 @@ public class WebViewFragment extends Fragment
         Bundle b = getArguments();
         mVector = b.getString(ARG_VECTOR);
         mFunction = b.getString(ARG_FUNCTION);
+        mIsExprMode = b.getBoolean(ARG_IS_EXPR_MODE);
         mBinding.solveWebView.loadUrl("file:///android_asset/preloader_determinate.html");
         mTask = new BuildSolutionTask();
         mTask.execute();
@@ -87,19 +88,55 @@ public class WebViewFragment extends Fragment
         protected String doInBackground(String... strings)
         {
             OutputWriter outputWriter = new OutputWriter(getContext(), mFileName);
+            if (mIsExprMode)
+            {
+                outputWriter.append(TagCreator.p(getActivity().getString(R.string.detailed_solution_0_1, mFunction)).render());
+            }
+            else
+            {
+                outputWriter.append(TagCreator.p(getActivity().getString(R.string.detailed_solution_0_2, mFunction)).render());
+            }
             outputWriter.append(HtmlBuilder.truthTable(mVector));
-
-            String[] arr = NativeLib.getTablesHtml(mVector, SharedPreferenceManager.getVarNamesString(getContext()));
-            outputWriter.append(TagCreator.p(getActivity().getString(R.string.delailed_solution_1, (int)(Math.log(mVector.length()) / Math.log(2)))).render());
-            outputWriter.append("<table class=\"centered bordered\">" +  arr[0] + "</table>");
-            outputWriter.append(TagCreator.p(getActivity().getString(R.string.delailed_solution_2)).render());
-            outputWriter.append ("<table class=\"centered bordered\">" +  arr[1] + "</table>");
-            outputWriter.append(TagCreator.p(getActivity().getString(R.string.delailed_solution_3)).render());
-            outputWriter.append("<table class=\"centered bordered\">" +  arr[2] + "</table>");
-            outputWriter.append(TagCreator.p(getActivity().getString(R.string.delailed_solution_4)).render());
-            outputWriter.append("<table class=\"centered bordered\">" +  arr[3] + "</table>");
-            outputWriter.append(TagCreator.p(getActivity().getString(R.string.delailed_solution_5)).render());
-            outputWriter.append("<br>" + TagCreator.p(TagCreator.b(arr[4])).render());
+            DetailedSolutionResult result = NativeLib.getDetailedResult(mVector, SharedPreferenceManager.getVarNamesString(getContext()));
+            if (result.hasSucceeded())
+            {
+                String[] arr = result.getTables();
+                outputWriter.append(TagCreator.p(getActivity().getString(R.string.detailed_solution_1, (int) (Math.log(mVector.length()) / Math.log(2)))).render());
+                outputWriter.append("<table class=\"centered bordered\">" + arr[0] + "</table><hr>");
+                outputWriter.append(TagCreator.p(getActivity().getString(R.string.detailed_solution_2)).render());
+                outputWriter.append("<table class=\"centered bordered\">" + arr[1] + "</table><hr>");
+                outputWriter.append(TagCreator.p(getActivity().getString(R.string.detailed_solution_3)).render());
+                outputWriter.append("<table class=\"centered bordered\">" + arr[2] + "</table><hr>");
+                outputWriter.append(TagCreator.p(getActivity().getString(R.string.detailed_solution_4)).render());
+                outputWriter.append("<table class=\"centered bordered\">" + arr[3] + "</table><hr>");
+                outputWriter.append(TagCreator.p(getString(R.string.detailed_solution_5)).render());
+                outputWriter.append("<p>" + TagCreator.b(result.getCore()) + "</p>");
+                if (result.getRest().length != 0)
+                {
+                    outputWriter.append(TagCreator.p(getString(R.string.detailed_solution_6_1)).render());
+                    for (String rest : result.getRest())
+                    {
+                        outputWriter.append(TagCreator.p(rest).render());
+                    }
+                }
+                else
+                {
+                    outputWriter.append(TagCreator.p(getString(R.string.detailed_solution_6_1)).render());
+                }
+                if (result.getResults().length != 0)
+                {
+                    outputWriter.append(TagCreator.p(getString(R.string.detailed_solution_7)).render());
+                    String[] varNames = SharedPreferenceManager.getVarNames(getContext());
+                    for (String res : result.getResults())
+                    {
+                        outputWriter.append(HtmlBuilder.pRes(res, varNames) + "<hr>");
+                    }
+                }
+            }
+            else
+            {
+                outputWriter.append(getString(R.string.detailed_solution_error));
+            }
             return outputWriter.save();
         }
 
