@@ -141,7 +141,7 @@ ShuntingYarder& ShuntingYarder::parse(size_t _var_number) //to RPN
             }
             if (found_left_parenthesis == false) // if the stack is emptied and the left parenthesis was not found
             {
-                throw ParserException(ParserException::ErrorCode::MISPATCHED_PARENTHESIS);
+                throw ParserException(ParserException::ErrorCode::MISMATCHED_PARENTHESIS);
             }
 			stack.pop(); // the left brace at the top
             ++pos;
@@ -184,7 +184,7 @@ ShuntingYarder& ShuntingYarder::parse(size_t _var_number) //to RPN
 	while (!stack.empty())
     {
         if (stack.top() == "(")
-            throw ParserException(ParserException::ErrorCode::MISPATCHED_PARENTHESIS);
+            throw ParserException(ParserException::ErrorCode::MISMATCHED_PARENTHESIS);
         out += stack.top() + ' ';
         stack.pop();
     }

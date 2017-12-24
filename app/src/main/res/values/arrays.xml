@@ -4,4 +4,15 @@
         <item>Show result</item>
         <item>Show detailed solution</item>
     </string-array>
+
+    <string-array name="parser_errors">
+        <item>Error: expression invalid</item>
+        <item> </item>
+        <item>Error: operator used in place of an operand</item>
+        <item>Error: mismatched parenthesis</item>
+        <item>Error: operator in front of expression</item>
+        <item>Error: operator before the right brace in the expression</item>
+        <item>Error: this expression evaluates to a constant, minimisation is redundant</item>
+        <item>Error: trailing operator in the expression</item>
+    </string-array>
 </resources>

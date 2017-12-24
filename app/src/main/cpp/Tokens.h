@@ -71,10 +71,10 @@ namespace Tokens
 	/*storage for defined operators*/
 	const std::unordered_map<char, S_Operator> operators_container // adding new operators can be done here and just here
         {
-                { '+', S_Operator{ 1, S_Operator::E_left, [](bool operant1, bool operant2) {return BooleanOperator{"0111"}(operant1, operant2); }} },
-                { '*', S_Operator{ 2, S_Operator::E_left, [](bool operant1, bool operant2) {return BooleanOperator{"0001"}(operant1, operant2); }} },
+                { '+', S_Operator{ 2, S_Operator::E_left, [](bool operant1, bool operant2) {return BooleanOperator{"0111"}(operant1, operant2); }} },
+                { '*', S_Operator{ 3, S_Operator::E_left, [](bool operant1, bool operant2) {return BooleanOperator{"0001"}(operant1, operant2); }} },
                 { '/', S_Operator{ 2, S_Operator::E_left, [](bool operant1, bool operant2) {return operant1 / operant2; }} },
-                { '^', S_Operator{ 3, S_Operator::E_right,[](bool operant1, bool operant2) {return BooleanOperator{"0110"}(operant1, operant2); }} }
+                { '^', S_Operator{ 1, S_Operator::E_right,[](bool operant1, bool operant2) {return BooleanOperator{"0110"}(operant1, operant2); }} }
         };
 	/**
 * @brief isCharOperator - function to check is the _in char is a defined operator

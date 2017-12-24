@@ -60,11 +60,11 @@ public class SettingsFragment extends Fragment implements SettingsActivity.OnBac
             {
                 return null;
             }
-            Pattern pattern = Pattern.compile("^[a-zA-z][0-9]{0,2}$");
+            Pattern pattern = Pattern.compile("^.{0,4}$");
             Matcher matcher = pattern.matcher(dest.toString() + source.toString());
             if(!matcher.matches())
             {
-                Toast.makeText(getContext(), "Variable must start with a letter and have 1 or 2 numbers after it", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Variable name should be short", Toast.LENGTH_SHORT).show();
                 return source;
             }
             return source.toString().toUpperCase();

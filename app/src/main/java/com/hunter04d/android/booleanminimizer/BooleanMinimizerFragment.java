@@ -193,7 +193,7 @@ public class BooleanMinimizerFragment extends Fragment
                         else // TODO: Output error here
                         {
                             mVector = result.getResult();
-                            mBinding.inputLayoutFormula.setError("Error: expression invalid");
+                            mBinding.inputLayoutFormula.setError(ParserErrorHandler.getInstance(getContext()).handleError(result.getResult()));
                             mBinding.webView.loadData("<html><body></body></html>", "text/html", "utf-8");
                             mBinding.buttonCalc.setEnabled(false);
                         }
@@ -241,6 +241,16 @@ public class BooleanMinimizerFragment extends Fragment
         });
         mBinding.webView.getSettings().setJavaScriptEnabled(true);
         return mBinding.getRoot();
+    }
+
+    @Override
+    public void onDestroyView()
+    {
+        if (mCalculateTask != null)
+        {
+            mCalculateTask.cancel(true);
+        }
+        super.onDestroyView();
     }
 
     private void setVarNames()

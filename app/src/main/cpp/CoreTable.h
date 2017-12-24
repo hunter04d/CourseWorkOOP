@@ -5,14 +5,14 @@
 #include <vector>
 #include <utility>
 #include <set>
-#include "FunctionBool.h"
-#include "VarTable.h"
+
 #include <iostream>
 #include <sstream>
 #include <numeric>
 #include "TermIndex.h"
 #include "TagBuilder.h"
-
+#include "FunctionBool.h"
+#include "VarTable.h"
 
 struct Edge
 {
