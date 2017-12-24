@@ -222,3 +222,33 @@ void IndexTable::Consume()
 		}
 	}
 }
+
+std::string IndexTable::Print(const Undefined_FunctionBool &functionBool) {
+    std::ostringstream cout;
+    cout << "<tbody>";
+    for (auto i = 0u; i < size; ++i)
+    {
+        cout << "<tr>";
+        for (auto j = 0u; j < size; ++j)
+        {
+            cout << "<td>";
+            if (F_Table.at(i).at(j).is_removed)
+            {
+                cout << "<s>";
+            }
+            for (auto k = 0u; k < F_Table.at(i).at(j).value.size(); ++k)
+            {
+                cout << F_Table.at(i).at(j).value.at(k);
+            }
+            if (F_Table.at(i).at(j).is_removed)
+            {
+                cout << "</s>";
+            }
+            cout << "</td>";
+        }
+        cout << "<td>" << functionBool.AtAsChar(i) << "</td>";
+        cout << "</tr>";
+    }
+    cout << "</tbody>";
+    return cout.str();
+}

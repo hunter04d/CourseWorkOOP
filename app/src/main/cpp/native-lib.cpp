@@ -17,7 +17,7 @@ Java_com_hunter04d_android_booleanminimizer_NativeLib_calculateMinimisation(JNIE
     env->ReleaseStringUTFChars(str, inChar);
     try {
         Undefined_FunctionBool last_func = Undefined_FunctionBool(in);
-        IndexTable index_table(last_func.numberOfvars);
+        IndexTable index_table(last_func.GetNumberOfvars());
         index_table.RemoveFromFunction(last_func.AsFunctionBool_WithUnknowValuesAs(1));
         CoreTable core_table(index_table.GetTermsInCoreTableForm(),
                              last_func.AsFunctionBool_WithUnknowValuesAs(0));
@@ -98,10 +98,10 @@ Java_com_hunter04d_android_booleanminimizer_NativeLib_getDetailedResult(JNIEnv *
     try {
         std::vector<std::string> tables;
         Undefined_FunctionBool last_func = Undefined_FunctionBool(in);
-        IndexTable index_table(last_func.numberOfvars);
-        tables.push_back(index_table.PrintNames(var_names) + index_table.Print());
+        IndexTable index_table(last_func.GetNumberOfvars());
+        tables.push_back(index_table.PrintNames(var_names) + index_table.Print(last_func));
         index_table.RemoveFromFunction(last_func.AsFunctionBool_WithUnknowValuesAs(1));
-        tables.push_back(index_table.PrintNames(var_names) + index_table.Print());
+        tables.push_back(index_table.PrintNames(var_names) + index_table.Print(last_func));
         CoreTable core_table(index_table.GetTermsInCoreTableForm(), last_func.AsFunctionBool_WithUnknowValuesAs(0));
         tables.push_back(core_table.Print(var_names));
         core_table.GetCore();

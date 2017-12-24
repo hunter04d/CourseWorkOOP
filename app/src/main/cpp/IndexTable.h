@@ -49,7 +49,7 @@ public:
 	{
 		for (size_t i = 0; i < size; ++i)
 		{
-			if (_func.vector.at(i) == 0)
+			if (_func.at(i) == 0)
 			{
 				RemoveRow(i);
 			}
@@ -61,7 +61,7 @@ public:
 	{
 		for (size_t i = 0; i < size; ++i)
 		{
-			if (_func.vector.at(i) == 0)
+			if (_func.at(i) == 0)
 			{
 				RemoveRow(i);
 			}
@@ -76,6 +76,8 @@ public:
 	std::string PrintNames(std::vector<std::string> var_names);
 
 	std::string Print();
+
+    std::string Print(const Undefined_FunctionBool& functionBool);
 
 	//Core Table interface
 	std::set<size_t> GetUnremovedColPos();

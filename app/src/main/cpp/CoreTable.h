@@ -31,7 +31,7 @@ struct Cell
 class CoreTable
 {
 	size_t rows;
-	size_t coloumlns;
+	size_t coloumns;
 	size_t num_of_vars;
 	std::set<size_t> deletedCol;
 	std::set<size_t> deletedRow;
@@ -50,15 +50,18 @@ private:
 		int out = -1;
 		for (auto i = 0; i < rows; ++i)
 		{
-			if (F_table.at(i).at(_coloumn).includes_min_term==true && ret_tag == false)
+			if (F_table.at(i).at(_coloumn).includes_min_term == true)
 			{
-				ret_tag = true;
-				out = i;
-				continue;
-			}
-			if((F_table.at(i).at(_coloumn).includes_min_term == true) && ret_tag == true)
-			{
-				return -1;
+				if (ret_tag == false)
+				{
+					ret_tag = true;
+					out = i;
+					continue;
+				}
+				if (ret_tag == true)
+				{
+					return -1;
+				}
 			}
 		}
 		return out;
@@ -66,7 +69,7 @@ private:
 
 	void DeleteRow(int _row)
 	{
-		for (auto j = 0; j < coloumlns; ++j)
+		for (auto j = 0; j < coloumns; ++j)
 		{
 			F_table.at(_row).at(j).deleted = true;
 			if (F_table.at(_row).at(j).includes_min_term)
@@ -90,7 +93,7 @@ private:
 public:
 	void GetCore()
 	{
-		for (auto j = 0; j < coloumlns; ++j)
+		for (auto j = 0; j < coloumns; ++j)
 		{
 			int r_row = OneXInCol(j);
 			if (r_row != -1)

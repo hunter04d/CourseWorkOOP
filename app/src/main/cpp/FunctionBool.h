@@ -10,10 +10,12 @@
 #include "UtilityFunc.h"
 #include "TermIndex.h"
 
-struct FunctionBool
+class FunctionBool
 {
+private:
 	std::vector<bool> vector;
 	const size_t numberOfvars;
+public:
 	FunctionBool(std::initializer_list<bool> init_list) : vector(init_list), numberOfvars(ceil(log2(init_list.size())))
 	{
 		size_t numberOfContituents(utility::fastpow2(numberOfvars));
@@ -54,6 +56,10 @@ struct FunctionBool
 			vector.resize(numberOfContituents, false);
 		}
 	}
+    bool at(size_t i)
+    {
+        return vector.at(i);
+    }
 
 	std::vector<size_t> PDNF()
 	{
@@ -96,12 +102,19 @@ struct FunctionBool
 		}
 		return out;
 	}
+
+    size_t GetNumberOfvars()
+    {
+        return numberOfvars;
+    }
 };
 
-struct Undefined_FunctionBool
+class Undefined_FunctionBool
 {
+private:
 	std::vector<TermIndex::val> vector;
 	const size_t numberOfvars;
+public:
 	Undefined_FunctionBool(const std::string& init_string) : numberOfvars(ceil(log2(init_string.size())))
 	{
 		size_t numberOfContituents(utility::fastpow2(numberOfvars));
@@ -149,6 +162,25 @@ struct Undefined_FunctionBool
 		}
 		return FunctionBool(out_ctor);
 	}
+	char AtAsChar(size_t i) const
+    {
+        auto x = vector.at(i);
+        switch (x)
+        {
+            case TermIndex::zero:
+                return '0';
+            case TermIndex::one:
+                return '1';
+            case TermIndex::crossed:
+                return '-';
+            default:
+                return '-';
+        }
+    }
+    size_t GetNumberOfvars()
+    {
+        return numberOfvars;
+    }
 
 	std::vector<size_t> PDNF_WithUnknowValues()
 	{

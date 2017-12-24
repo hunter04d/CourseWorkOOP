@@ -9,7 +9,7 @@ std::string CoreTable::Print(const std::vector<std::string> &var_names) {
     }
     cout << "</th>";
 
-    for (auto j = 0; j < coloumlns; ++j)
+    for (auto j = 0; j < coloumns; ++j)
     {
         cout << "<th>";
         if (terms.at(j).is_crossed)
@@ -70,7 +70,7 @@ std::string CoreTable::Print(const std::vector<std::string> &var_names) {
             cout << "</s>";
         }
         cout << "</b></th>";
-        for (auto j = 0; j < coloumlns; ++j)
+        for (auto j = 0; j < coloumns; ++j)
         {
             cout << "<td>";
             if (F_table.at(i).at(j).includes_min_term)
@@ -161,12 +161,13 @@ std::vector<std::string> CoreTable::ReturnRest() {
     return out;
 }
 
-CoreTable::CoreTable(std::vector<TermIndex> _min_terms, FunctionBool _func) : rows(_min_terms.size()), coloumlns(_func.PDNF_Size()), num_of_vars(_func.numberOfvars), F_table(rows, std::vector<Cell>(coloumlns))
+CoreTable::CoreTable(std::vector<TermIndex> _min_terms, FunctionBool _func) : rows(_min_terms.size()), coloumns(_func.PDNF_Size()), num_of_vars(
+        _func.GetNumberOfvars()), F_table(rows, std::vector<Cell>(coloumns))
 {
     auto _PDNF = _func.PDNF();
-    for (auto i = 0u; i < coloumlns; ++i)
+    for (auto i = 0u; i < coloumns; ++i)
     {
-        terms.emplace_back(VarTable(_func.numberOfvars, _PDNF.at(i)));
+        terms.emplace_back(VarTable(_func.GetNumberOfvars(), _PDNF.at(i)));
     }
     for (auto i = 0u; i < rows; ++i)
     {
@@ -174,7 +175,7 @@ CoreTable::CoreTable(std::vector<TermIndex> _min_terms, FunctionBool _func) : ro
     }
     for (auto i = 0u; i < rows; ++i)
     {
-        for (auto j = 0u; j < coloumlns; ++j)
+        for (auto j = 0u; j < coloumns; ++j)
         {
             if (terms.at(j).term.Includes(min_terms.at(i).term))
             {
