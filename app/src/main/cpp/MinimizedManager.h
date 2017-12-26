@@ -48,9 +48,13 @@ public:
         std::vector<std::string> out;
         for (const auto& set: other_sets_sorted)
         {
-            out.push_back(set.substr(0, core.size()-1));
+            out.push_back(set.substr(0, set.size()-1));
         }
         return out;
+    }
+    std::vector<std::string> GetCovers()
+    {
+
     }
 };
 
