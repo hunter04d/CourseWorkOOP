@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/BooleanMinimizer.iml" filepath="$PROJECT_DIR$/BooleanMinimizer.iml" />
+      <module fileurl="file://C:\Users\hyunter04d\Documents\AndroidStudio\CourseWorkOOP\BooleanMinimizer.iml" filepath="C:\Users\hyunter04d\Documents\AndroidStudio\CourseWorkOOP\BooleanMinimizer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CourseWorkOOP.iml" filepath="$PROJECT_DIR$/CourseWorkOOP.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.hunter04d.android.booleanminimizer.database.Solution;
+import com.hunter04d.android.booleanminimizer.database.SolutionsManager;
 import com.hunter04d.android.booleanminimizer.databinding.FragmentWebViewBinding;
 
 import j2html.TagCreator;
@@ -97,7 +99,8 @@ public class WebViewFragment extends Fragment
                 outputWriter.append(TagCreator.p(getActivity().getString(R.string.detailed_solution_0_2, mFunction)).render());
             }
             outputWriter.append(HtmlBuilder.truthTable(mVector));
-            DetailedSolutionResult result = NativeLib.getDetailedResult(mVector, SharedPreferenceManager.getVarNamesString(getContext()));
+            String varNamesString = SharedPreferenceManager.getVarNamesString(getContext());
+            DetailedSolutionResult result = NativeLib.getDetailedResult(mVector, varNamesString);
             if (result.hasSucceeded())
             {
                 String[] arr = result.getTables();
@@ -114,15 +117,18 @@ public class WebViewFragment extends Fragment
                         .append("<p>" + TagCreator.b(result.getCore()) + "</p>");
                 if (result.getRest().length != 0)
                 {
-                    outputWriter.append(TagCreator.p(getString(R.string.detailed_solution_6_1)).render());
-                    for (String rest : result.getRest())
+                    if(!result.getRest()[0].equals(""))
                     {
-                        outputWriter.append(TagCreator.p(rest).render());
+                        outputWriter.append(TagCreator.p(getString(R.string.detailed_solution_6_1)).render());
+                        for (String rest : result.getRest())
+                        {
+                            outputWriter.append(TagCreator.p(rest).render());
+                        }
                     }
                 }
                 else
                 {
-                    outputWriter.append(TagCreator.p(getString(R.string.detailed_solution_6_1)).render());
+                    outputWriter.append(TagCreator.p(getString(R.string.detailed_solution_6_2)).render());
                 }
                 if (result.getResults().length != 0)
                 {
@@ -133,6 +139,9 @@ public class WebViewFragment extends Fragment
                         outputWriter.append(HtmlBuilder.pRes(res, varNames) + "<hr>");
                     }
                 }
+                Solution s = new Solution(SolutionsManager.get(getContext()).getCount() + 1,
+                        mFunction, HtmlBuilder.linearResult(result.getResults()[0], varNamesString.split(" ")), varNamesString);
+                SolutionsManager.get(getContext()).insertSolution(s);
             }
             else
             {
